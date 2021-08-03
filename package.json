@@ -5,7 +5,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "ci": "yarn install --frozen-lockfile"
   },
   "dependencies": {
     "@aws-amplify/datastore": "^3.3.0",
