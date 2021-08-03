@@ -5,7 +5,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "ci": "yarn install --frozen-lockfile"
   },
   "dependencies": {
     "@aws-amplify/datastore": "^3.3.0",
@@ -34,7 +35,7 @@
     "react-native-svg": "^12.1.1",
     "react-native-vector-icons": "^8.1.0",
     "react-native-web": "~0.13.12",
-    "react-native-webview": "^11.6.5"
+    "react-native-webview": "11.6.2"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"
