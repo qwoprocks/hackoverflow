@@ -3,6 +3,7 @@ import QRCode from 'react-native-qrcode-generator';
 import { SafeAreaView, View, FlatList, StyleSheet, Text, Image, Pressable } from 'react-native';
 import { screenOptions } from './LogoutButton';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Auth } from 'aws-amplify'
 import moment from 'moment';
 
 const qrIcon = require('../../assets/qr-code.png');
