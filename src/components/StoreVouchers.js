@@ -5,6 +5,7 @@ import { StoreVoucher, UserVoucher } from "../models"
 import { FlatList, StyleSheet, SafeAreaView, StatusBar, Text, Image, View, TouchableOpacity } from "react-native"
 import { ActivityIndicator } from "react-native-paper"
 import { SearchBar } from "react-native-elements"
+import LogoutButton from './LogoutButton'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
@@ -54,6 +55,7 @@ function Header() {
         <Text style={headerStyles.headerText}>
           Store Vouchers
         </Text>
+        <LogoutButton />
       </View>
     );
   }
