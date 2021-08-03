@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react"
 
 import { DataStore } from "@aws-amplify/datastore"
 import { StoreVoucher, UserVoucher } from "../models"
-import { screenOptions } from "./LogoutButton"
 import { FlatList, StyleSheet, SafeAreaView, StatusBar, Text, Image, View, TouchableOpacity } from "react-native"
 import { ActivityIndicator } from "react-native-paper"
 import { SearchBar } from "react-native-elements"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
 
 export default function StoreVouchers() {
 
@@ -29,16 +29,7 @@ export default function StoreVouchers() {
     return <>
         {isLoading
             ? <Loading />
-            : <Stack.Navigator
-                initialRouteName='Store Vouchers'
-                screenOptions={screenOptions}
-            >
-                <Stack.Screen
-                    name='Store Vouchers'
-                    component={renderStoreVoucherPage}
-                />
-
-            </Stack.Navigator>}
+            : <StoreVoucherList storeVouchers={storeVouchers} />}
     </>
 
 
@@ -106,6 +97,7 @@ function StoreVoucherList(props) {
 
     return (
         <View style={voucherStyles.containerWithHeader}>
+            <Header />
             <SearchBar
                 value={filter}
                 onChangeText={setFilter}

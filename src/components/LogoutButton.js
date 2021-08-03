@@ -1,42 +1,31 @@
 import React from 'react';
 import { Auth } from 'aws-amplify'
 import { TouchableOpacity, StyleSheet, Text } from 'react-native'
-
-
-const headerStyles = StyleSheet.create({
-    logoutButton: {
-        borderRadius: 10,
-        borderColor: 'white',
-        borderWidth: 2,
-        borderStyle: 'solid',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 60,
-        height: 30,
-        marginRight: 16,
-    },
-    logoutButtonText: {
-        color: 'white',
-    }
-})
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 function LogoutButton() {
     return <TouchableOpacity
         style={headerStyles.logoutButton}
         onPress={async () => await Auth.signOut({ global: true })}
     >
-        <Text style={headerStyles.logoutButtonText}>Logout</Text>
+        <MaterialCommunityIcons
+            name='logout'
+            color='#003B70'
+            size={30}
+      />
     </TouchableOpacity>
 }
 
-export const screenOptions = {
-    headerRight: () => <LogoutButton />,
-    headerBackTitle: 'Back',
-    headerTintColor: '#FFF',
-    headerStyle: {
-        backgroundColor: '#003B70',
+const headerStyles = StyleSheet.create({
+    logoutButton: {
+        backgroundColor: 'transparent',
+        marginLeft: 'auto',
+        marginRight: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 30,
+        height: 30,
     },
-    headerTitleStyle: {
-        color: '#FFF',
-    },
-}
+})
+
+export default LogoutButton;

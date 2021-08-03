@@ -1,8 +1,8 @@
 import React from 'react';
 import QRCode from 'react-native-qrcode-generator';
-import { SafeAreaView, View, StatusBar, FlatList, StyleSheet, Text, Image, Pressable } from 'react-native';
-import { screenOptions } from './LogoutButton';
+import { SafeAreaView, View, StatusBar, FlatList, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import LogoutButton from './LogoutButton'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 
@@ -35,6 +35,7 @@ function Header() {
       <Text style={styles.headerText}>
         My Vouchers
       </Text>
+      <LogoutButton />
     </View>
   );
 }
@@ -62,7 +63,7 @@ const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation 
           - (moment(timebought).add(daysvalid, 'd').diff(Date.now(), 'days') * 24)}H till expiry
       </Text>
     </View>
-    <Pressable
+    <TouchableOpacity
       style={styles.button}
       onPress={() => navigation.navigate('Show QR Code', {
         voucherId: { voucherId }
@@ -73,7 +74,7 @@ const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation 
         color='#003B70'
         size={65}
       />
-    </Pressable>
+    </TouchableOpacity>
   </View>
 );
 
@@ -122,7 +123,7 @@ const UserVoucherListTab = () => {
   return (
     <Stack.Navigator
       initialRouteName='My Vouchers'
-      screenOptions={[{
+      screenOptions={{
         headerStyle: {
           backgroundColor: '#FFF',
         },
@@ -132,7 +133,7 @@ const UserVoucherListTab = () => {
         },
         headerBackTitle: 'Back',
         headerTintColor: '#003B70',
-      }, screenOptions]}
+      }}
     >
       <Stack.Screen
         name='My Vouchers'
