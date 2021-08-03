@@ -4,20 +4,30 @@ import {
   View, Text, StyleSheet, TextInput, Button
 } from 'react-native'
 
-import { API, graphqlOperation } from 'aws-amplify'
-import { createTodo } from './src/graphql/mutations'
-import { listTodos } from './src/graphql/queries'
-import Amplify from 'aws-amplify'
+import Amplify, { Auth } from 'aws-amplify'
 import config from './src/aws-exports'
-import SvgQRCode from 'react-native-qrcode-svg'
 
 import QRScanner from './src/components/QRScanner'
 import UserVoucherListTab from './src/components/UserVoucherListTab'
 import StoreVouchers from './src/components/StoreVouchers'
 import { NavigationContainer } from '@react-navigation/native';
+import { getHeaderTitle } from '@react-navigation/elements';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
-Amplify.configure(config)
+import { withAuthenticator, AmplifyTheme } from 'aws-amplify-react-native'
+
+
+Amplify.configure({
+  ...config,
+  Analytics: {
+    disabled: true,
+  },
+  Auth: {
+    mandatorySignIn: true,
+  }
+})
+
+console.log(Auth.configure())
 
 const initialState = { name: '', description: '' }
 const Tab = createMaterialBottomTabNavigator();
@@ -27,9 +37,7 @@ const App = () => {
   const [formState, setFormState] = useState(initialState)
   const [todos, setTodos] = useState([])
 
-  useEffect(() => { }, [])
-
-  function setInput(key, value) {
+  const setInput = (key, value) => {
     setFormState({ ...formState, [key]: value })
   }
 
@@ -92,26 +100,10 @@ const App = () => {
         />
       </Tab.Navigator>
     </NavigationContainer>
-    // <View style={styles.container}>
-    //   <QRScanner style={styles.qrscanner} />
-    //   <SvgQRCode
-    //     value={'yayyyyyy'}
-    //   />
-    //   <StatusBar style="auto" />
-    // </View>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingLeft: 20,
-    paddingRight: 20,
-  },
-  qrscanner: {
-    flex: 1,
-  },
   todo: {
     marginBottom: 15
   },
@@ -129,4 +121,30 @@ const styles = StyleSheet.create({
   }
 })
 
-export default App
+
+// Authenticator Theming
+const MyButton = Object.assign({}, AmplifyTheme.button, {
+  alignItems: 'center',
+  padding: 16,
+  backgroundColor: '#003B70'
+});
+const MyButtonDisabled = Object.assign({}, AmplifyTheme.buttonDisabled, { 
+  alignItems: 'center',
+  padding: 16,
+  backgroundColor: '#496075',
+});
+const MySectionFooterLink = Object.assign({}, AmplifyTheme.sectionFooterLink, { 
+  fontSize: 14,
+  color: '#003B70',
+  alignItems: 'baseline',
+  textAlign: 'center',
+});
+const MyTheme = Object.assign({}, AmplifyTheme, { button: MyButton, buttonDisabled: MyButtonDisabled, sectionFooterLink: MySectionFooterLink });
+
+export default withAuthenticator(App, {
+  theme: MyTheme,
+  signUpConfig: {
+    hiddenDefaults: ['phone_number'],
+    signUpFields: [{key: 'preferred_username', label: 'Display Name (Optional)', required: false} ]
+  }
+})

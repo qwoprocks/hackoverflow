@@ -1,6 +1,7 @@
 import React from 'react';
 import QRCode from 'react-native-qrcode-generator';
 import { SafeAreaView, View, StatusBar, FlatList, StyleSheet, Text, Image, Pressable } from 'react-native';
+import { screenOptions } from './LogoutButton';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
@@ -115,11 +116,13 @@ function UserQRCode({ route, navigation }) {
 
 const Stack = createNativeStackNavigator();
 
-function UserVoucherListTab() {
+
+
+const UserVoucherListTab = () => {
   return (
     <Stack.Navigator
       initialRouteName='My Vouchers'
-      screenOptions={{
+      screenOptions={[{
         headerStyle: {
           backgroundColor: '#FFF',
         },
@@ -129,7 +132,7 @@ function UserVoucherListTab() {
         },
         headerBackTitle: 'Back',
         headerTintColor: '#003B70',
-      }}
+      }, screenOptions]}
     >
       <Stack.Screen
         name='My Vouchers'

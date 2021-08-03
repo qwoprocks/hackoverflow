@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react"
 
 import { DataStore } from "@aws-amplify/datastore"
 import { StoreVoucher, UserVoucher } from "../models"
-import { FlatList, StyleSheet, SafeAreaView, StatusBar, Text, Image, View, Pressable } from "react-native"
+import { screenOptions } from "./LogoutButton"
+import { FlatList, StyleSheet, SafeAreaView, StatusBar, Text, Image, View, TouchableOpacity } from "react-native"
 import { ActivityIndicator } from "react-native-paper"
 import { SearchBar } from "react-native-elements"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -22,11 +23,22 @@ export default function StoreVouchers() {
         setIsLoading(false)
     }
 
+    function renderStoreVoucherPage() {
+        return <StoreVoucherList storeVouchers={storeVouchers} />
+    }
     return <>
-        <Header />
         {isLoading
             ? <Loading />
-            : <StoreVoucherList storeVouchers={storeVouchers} />}
+            : <Stack.Navigator
+                initialRouteName='Store Vouchers'
+                screenOptions={screenOptions}
+            >
+                <Stack.Screen
+                    name='Store Vouchers'
+                    component={renderStoreVoucherPage}
+                />
+
+            </Stack.Navigator>}
     </>
 
 
@@ -155,13 +167,13 @@ function VoucherCard(props) {
             </Text>
         </View>
         <View style={{ flex: 1 }} />
-        <Pressable style={voucherStyles.button}>
+        <TouchableOpacity style={voucherStyles.button}>
             <MaterialCommunityIcons
                 name='cart-arrow-down'
                 color='#003B70'
                 size={50}
             />
-        </Pressable>
+        </TouchableOpacity>
     </View>
 }
 

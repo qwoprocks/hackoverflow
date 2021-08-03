@@ -1,12 +1,27 @@
-type UserVoucher @model @auth(rules: [{allow: public}]) {
+type StoreProfile @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  username: String!
+  shopname: String!
+  StoreVouchers: [StoreVoucher] @connection(keyName: "byStoreProfile", fields: ["id"])
+}
+
+type UserProfile @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  username: String!
+  UserVouchers: [UserVoucher] @connection(keyName: "byUserProfile", fields: ["id"])
+  money: Int!
+}
+
+type UserVoucher @model @auth(rules: [{allow: public}]) @key(name: "byUserProfile", fields: ["profileID"]) {
   id: ID!
   Voucher: StoreVoucher @connection
   timebought: AWSDateTime!
   timeused: AWSDateTime
   used: Boolean!
+  profileID: ID
 }
 
-type StoreVoucher @model @auth(rules: [{allow: public}]) {
+type StoreVoucher @model @auth(rules: [{allow: public}]) @key(name: "byStoreProfile", fields: ["storeprofileID"]) {
   id: ID!
   title: String!
   shop: String!
@@ -14,5 +29,6 @@ type StoreVoucher @model @auth(rules: [{allow: public}]) {
   price: Int!
   image: String!
   daysvalid: Int!
+  storeprofileID: ID
 }
  
