@@ -12,10 +12,15 @@ import config from './src/aws-exports'
 import SvgQRCode from 'react-native-qrcode-svg'
 
 import QRScanner from './src/components/QRScanner'
+import UserVoucherListTab from './src/components/UserVoucherListTab'
+import { NavigationContainer } from '@react-navigation/native';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
 Amplify.configure(config)
 
 const initialState = { name: '', description: '' }
+const Tab = createMaterialBottomTabNavigator();
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const App = () => {
   const [formState, setFormState] = useState(initialState)
@@ -28,13 +33,48 @@ const App = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <QRScanner style={styles.qrscanner} />
-      <SvgQRCode
-        value={'yayyyyyy'}
-      />
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Tab.Navigator
+        initialRouteName='UserVoucherListTab'
+        activeColor='white'
+        barStyle={{ backgroundColor: '#003B70' }}
+      >
+        <Tab.Screen 
+          name='Scan QR Code' 
+          component={QRScanner} 
+          options={{
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons 
+                name='qrcode' 
+                color={color} 
+                size={26} 
+              />
+            )
+          }}
+        />
+        <Tab.Screen 
+          name='UserVoucherListTab' 
+          component={UserVoucherListTab} 
+          options={{
+            title: 'My Vouchers',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons 
+                name='ticket-confirmation' 
+                color={color} 
+                size={26} 
+              />
+            )
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
+    // <View style={styles.container}>
+    //   <QRScanner style={styles.qrscanner} />
+    //   <SvgQRCode
+    //     value={'yayyyyyy'}
+    //   />
+    //   <StatusBar style="auto" />
+    // </View>
   )
 }
 
