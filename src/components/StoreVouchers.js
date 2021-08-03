@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react"
 
 import { DataStore } from "@aws-amplify/datastore"
 import { StoreVoucher, UserVoucher } from "../models"
-import { FlatList, StyleSheet, SafeAreaView, Text, Image, View, Pressable } from "react-native"
+import { FlatList, StyleSheet, SafeAreaView, Text, Image, View, Pressable, TouchableOpacity } from "react-native"
 import { ActivityIndicator } from "react-native-paper"
 import { SearchBar } from "react-native-elements"
+import { Auth } from 'aws-amplify'
 
 export default function StoreVouchers() {
 
@@ -40,18 +41,47 @@ const headerStyles = StyleSheet.create({
         flex: 1
     },
     text: {
+        flexDirection: 'row',
         marginLeft: 14,
         marginBottom: 14,
         color: "white",
         fontSize: 20,
+        fontWeight: "700",
+        justifyContent: 'space-between'
+    },
+    logoutButton: {
+        borderRadius: 10,
+        borderColor: 'white',
+        borderWidth: 2,
+        borderStyle: 'solid',
+        position: 'absolute',
+        right: 10,
+        top: '50%',
+        marginBottom: '-50%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 60,
+        height: 30,
+    },
+    logoutButtonText: {
+        fontSize: 14,
+        color: 'white',
         fontWeight: "700"
     }
 })
 
 function Header() {
     return <View backgroundColor="#003B70" style={headerStyles.container}>
+        <TouchableOpacity
+            style={headerStyles.logoutButton}
+            onPress={async () => await Auth.signOut({ global: true })}
+        >
+            <Text style={headerStyles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity> 
         <View style={headerStyles.spacer} />
-        <Text style={headerStyles.text}>Store Vouchers</Text>
+        <Text style={headerStyles.text}>
+            Store Vouchers
+        </Text>
     </View>
 }
 
@@ -145,9 +175,9 @@ function VoucherCard(props) {
             </Text>
         </View>
         <View style={{ flex: 1 }} />
-        <Pressable style={voucherStyles.button}>
-            <Text style={voucherStyles.buttonLabel}>BUY</Text>
-        </Pressable>
+        <TouchableOpacity style={voucherStyles.button}>
+            <Text style={voucherStyles.buttonLabel}>Buy</Text>
+        </TouchableOpacity>
     </View>
 }
 
