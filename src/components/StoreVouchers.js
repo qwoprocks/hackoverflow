@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react"
 
 import { DataStore } from "@aws-amplify/datastore"
 import { StoreVoucher, UserVoucher } from "../models"
-import { FlatList, StyleSheet, SafeAreaView, Text, Image, View, Pressable } from "react-native"
+import { FlatList, StyleSheet, SafeAreaView, StatusBar, Text, Image, View, Pressable } from "react-native"
 import { ActivityIndicator } from "react-native-paper"
 import { SearchBar } from "react-native-elements"
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function StoreVouchers() {
 
@@ -32,28 +33,27 @@ export default function StoreVouchers() {
 }
 
 const headerStyles = StyleSheet.create({
-    container: {
-        backgroundColor: "#003B70",
-        height: 80
+    header: {
+        flexDirection: 'row',
+        marginTop: 40,
+        marginBottom: 10,
+        marginLeft: 20,
     },
-    spacer: {
-        flex: 1
+    headerText: {
+        fontSize: 24,
+        fontWeight: '600',
     },
-    text: {
-        marginLeft: 14,
-        marginBottom: 14,
-        color: "white",
-        fontSize: 20,
-        fontWeight: "700"
-    }
 })
 
 function Header() {
-    return <View backgroundColor="#003B70" style={headerStyles.container}>
-        <View style={headerStyles.spacer} />
-        <Text style={headerStyles.text}>Store Vouchers</Text>
-    </View>
-}
+    return(
+      <View style={headerStyles.header}>
+        <Text style={headerStyles.headerText}>
+          Store Vouchers
+        </Text>
+      </View>
+    );
+  }
 
 function Loading() {
     return <View ><ActivityIndicator size="large" /></View>
@@ -61,16 +61,21 @@ function Loading() {
 
 const searchBarStyles = StyleSheet.create({
     container: {
+        flexDirection: "row",
         backgroundColor: "transparent",
+        borderTopColor: "transparent",
         borderBottomColor: "transparent",
     },
     input: {
         backgroundColor: "white",
         marginLeft: 10,
         marginRight: 10,
-        borderRadius: 20
+        paddingLeft: 10,
+        borderRadius: 9999,
+        color: 'black'
     }
 })
+
 function StoreVoucherList(props) {
     const { storeVouchers } = props;
     const [filter, setFilter] = useState("")
@@ -87,22 +92,27 @@ function StoreVoucherList(props) {
         return <VoucherCard voucher={item} />
     }
 
-    return <SafeAreaView>
-        <SearchBar
-            value={filter}
-            onChangeText={setFilter}
-            containerStyle={searchBarStyles.container}
-            inputContainerStyle={searchBarStyles.input}
-            placeholder="Search..."
-            lightTheme
+    return (
+        <View style={voucherStyles.containerWithHeader}>
+            <SearchBar
+                value={filter}
+                onChangeText={setFilter}
+                containerStyle={searchBarStyles.container}
+                inputContainerStyle={searchBarStyles.input}
+                placeholder="Search..."
+                lightTheme
 
-        />
-        <FlatList
-            data={filteredStoreVouchers}
-            renderItem={renderVoucher}
-            keyExtractor={(item) => item.id}
-        />
-    </SafeAreaView>
+            />
+            <SafeAreaView style={voucherStyles.container}>
+                <StatusBar barStyle='dark-content' />
+                <FlatList
+                    data={filteredStoreVouchers}
+                    renderItem={renderVoucher}
+                    keyExtractor={(item) => item.id}
+                />
+            </SafeAreaView>
+        </View>
+    );
 }
 
 
@@ -146,7 +156,11 @@ function VoucherCard(props) {
         </View>
         <View style={{ flex: 1 }} />
         <Pressable style={voucherStyles.button}>
-            <Text style={voucherStyles.buttonLabel}>BUY</Text>
+            <MaterialCommunityIcons
+                name='cart-arrow-down'
+                color='#003B70'
+                size={50}
+            />
         </Pressable>
     </View>
 }
@@ -157,6 +171,10 @@ const voucherStyles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         marginTop: 4,
+    },
+    containerWithHeader: {
+        flex: 1,
+        flexDirection: 'column'
     },
     voucher: {
         backgroundColor: 'white',
@@ -197,18 +215,13 @@ const voucherStyles = StyleSheet.create({
         fontSize: 14,
     },
     button: {
-        backgroundColor: "#003B70",
-        borderRadius: 10,
+        marginLeft: 'auto',
         alignSelf: 'center',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 60,
-        height: 60,
-        elevation: 5,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: 'white',
+        width: 70,
+        height: 70,
+        borderRadius: 10,
     },
-    buttonLabel: {
-        color: "white",
-        fontSize: 16,
-        fontWeight: '700',
-    }
 });

@@ -37,16 +37,22 @@ const App = () => {
     <NavigationContainer>
       <Tab.Navigator
         initialRouteName='StoreVouchers'
-        activeColor='white'
-        barStyle={{ backgroundColor: '#003B70' }}
+        activeColor='#003B70'
+        barStyle={styles.bar}
+        shifting={true}
       >
         <Tab.Screen
-          name='Scan QR Code'
-          component={QRScanner}
+          name='UserVoucherListTab'
+          component={UserVoucherListTab}
           options={{
-            tabBarIcon: ({ color }) => (
+            title: 'Vouchers',
+            tabBarIcon: ({ focused, color }) => (
               <MaterialCommunityIcons
-                name='qrcode'
+                name={
+                  focused 
+                  ? 'ticket-confirmation'
+                  : 'ticket-confirmation-outline'
+                }
                 color={color}
                 size={26}
               />
@@ -54,15 +60,14 @@ const App = () => {
           }}
         />
         <Tab.Screen
-          name='UserVoucherListTab'
-          component={UserVoucherListTab}
+          name='Scan'
+          component={QRScanner}
           options={{
-            title: 'My Vouchers',
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons
-                name='ticket-confirmation'
+                name='qrcode-scan'
                 color={color}
-                size={26}
+                size={20}
               />
             )
           }}
@@ -71,10 +76,14 @@ const App = () => {
           name='StoreVouchers'
           component={StoreVouchers}
           options={{
-            title: 'Store Vouchers',
-            tabBarIcon: ({ color }) => (
+            title: 'Store',
+            tabBarIcon: ({ focused, color }) => (
               <MaterialCommunityIcons
-                name='store'
+                name={
+                  focused
+                  ? 'store'
+                  : 'store-outline'
+                }
                 color={color}
                 size={26}
               />
@@ -114,6 +123,9 @@ const styles = StyleSheet.create({
   },
   todoName: {
     fontSize: 18
+  },
+  bar: {
+    backgroundColor: '#FFF',
   }
 })
 

@@ -1,10 +1,9 @@
 import React from 'react';
 import QRCode from 'react-native-qrcode-generator';
-import { SafeAreaView, View, FlatList, StyleSheet, Text, Image, Pressable } from 'react-native';
+import { SafeAreaView, View, StatusBar, FlatList, StyleSheet, Text, Image, Pressable } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
-
-const qrIcon = require('../../assets/qr-code.png');
 
 const DATA = [
   {
@@ -28,6 +27,16 @@ const DATA = [
     daysvalid: 14
   }
 ];
+
+function Header() {
+  return(
+    <View style={styles.header}>
+      <Text style={styles.headerText}>
+        My Vouchers
+      </Text>
+    </View>
+  );
+}
 
 const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation }) => (
   <View style={[styles.container, styles.voucher, styles.shadowProp]}>
@@ -53,13 +62,16 @@ const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation 
       </Text>
     </View>
     <Pressable
-      style={[styles.button, styles.shadowProp]}
-      borderRadius={10}
+      style={styles.button}
       onPress={() => navigation.navigate('Show QR Code', {
         voucherId: { voucherId }
       })}
     >
-      <Image source={qrIcon} style={styles.icon} />
+      <MaterialCommunityIcons
+        name='qrcode'
+        color='#003B70'
+        size={65}
+      />
     </Pressable>
   </View>
 );
@@ -78,13 +90,17 @@ function UserVoucherList({ navigation }) {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={DATA}
-        renderItem={renderVoucher}
-        keyExtractor={voucher => voucher.id}
-      />
-    </SafeAreaView>
+    <View style={styles.containerWithHeader}>
+      <Header />
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle='dark-content' />
+        <FlatList
+          data={DATA}
+          renderItem={renderVoucher}
+          keyExtractor={voucher => voucher.id}
+        />
+      </SafeAreaView>
+    </View>
   );
 }
 
@@ -104,19 +120,23 @@ function UserVoucherListTab() {
     <Stack.Navigator
       initialRouteName='My Vouchers'
       screenOptions={{
-        headerBackTitle: 'Back',
-        headerTintColor: '#FFF',
         headerStyle: {
-          backgroundColor: '#003B70',
+          backgroundColor: '#FFF',
         },
         headerTitleStyle: {
-          color: '#FFF',
+          color: '#000',
+          fontSize: 18,
         },
+        headerBackTitle: 'Back',
+        headerTintColor: '#003B70',
       }}
     >
       <Stack.Screen
         name='My Vouchers'
         component={UserVoucherList}
+        options={{
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name='Show QR Code'
@@ -128,9 +148,23 @@ function UserVoucherListTab() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 10,
     flexDirection: 'row',
     marginTop: 4,
+  },
+  containerWithHeader: {
+    flex: 1,
+    flexDirection: 'column'
+  },
+  header: {
+    flexDirection: 'row',
+    marginTop: 40,
+    marginBottom: 10,
+    marginLeft: 20,
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: '600',
   },
   voucher: {
     backgroundColor: 'white',
@@ -170,10 +204,6 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontSize: 14,
   },
-  icon: {
-    width: 45,
-    height: 45,
-  },
   button: {
     marginLeft: 'auto',
     alignSelf: 'center',
@@ -182,6 +212,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     width: 70,
     height: 70,
+    borderRadius: 10,
   },
   qrContainer: {
     flex: 1,
