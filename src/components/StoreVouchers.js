@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react"
 
 import { DataStore } from "@aws-amplify/datastore"
 import { StoreVoucher, UserVoucher } from "../models"
-import { FlatList, StyleSheet, SafeAreaView, Text, Image, View, Pressable, TouchableOpacity } from "react-native"
+import { screenOptions } from "./LogoutButton"
+import { FlatList, StyleSheet, SafeAreaView, Text, Image, View, TouchableOpacity } from "react-native"
 import { ActivityIndicator } from "react-native-paper"
 import { SearchBar } from "react-native-elements"
-import { Auth } from 'aws-amplify'
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+const Stack = createNativeStackNavigator();
 
 export default function StoreVouchers() {
 
@@ -22,68 +25,27 @@ export default function StoreVouchers() {
         setIsLoading(false)
     }
 
+    function renderStoreVoucherPage() {
+        return <StoreVoucherList storeVouchers={storeVouchers} />
+    }
     return <>
-        <Header />
         {isLoading
             ? <Loading />
-            : <StoreVoucherList storeVouchers={storeVouchers} />}
+            : <Stack.Navigator
+                initialRouteName='Store Vouchers'
+                screenOptions={screenOptions}
+            >
+                <Stack.Screen
+                    name='Store Vouchers'
+                    component={renderStoreVoucherPage}
+                />
+
+            </Stack.Navigator>}
     </>
 
 
 }
 
-const headerStyles = StyleSheet.create({
-    container: {
-        backgroundColor: "#003B70",
-        height: 80
-    },
-    spacer: {
-        flex: 1
-    },
-    text: {
-        flexDirection: 'row',
-        marginLeft: 14,
-        marginBottom: 14,
-        color: "white",
-        fontSize: 20,
-        fontWeight: "700",
-        justifyContent: 'space-between'
-    },
-    logoutButton: {
-        borderRadius: 10,
-        borderColor: 'white',
-        borderWidth: 2,
-        borderStyle: 'solid',
-        position: 'absolute',
-        right: 10,
-        top: '50%',
-        marginBottom: '-50%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 60,
-        height: 30,
-    },
-    logoutButtonText: {
-        fontSize: 14,
-        color: 'white',
-        fontWeight: "700"
-    }
-})
-
-function Header() {
-    return <View backgroundColor="#003B70" style={headerStyles.container}>
-        <TouchableOpacity
-            style={headerStyles.logoutButton}
-            onPress={async () => await Auth.signOut({ global: true })}
-        >
-            <Text style={headerStyles.logoutButtonText}>Logout</Text>
-        </TouchableOpacity> 
-        <View style={headerStyles.spacer} />
-        <Text style={headerStyles.text}>
-            Store Vouchers
-        </Text>
-    </View>
-}
 
 function Loading() {
     return <View ><ActivityIndicator size="large" /></View>
@@ -175,7 +137,7 @@ function VoucherCard(props) {
             </Text>
         </View>
         <View style={{ flex: 1 }} />
-        <TouchableOpacity style={voucherStyles.button}>
+        <TouchableOpacity style={voucherStyles.button} onPress={purchaseVoucher}>
             <Text style={voucherStyles.buttonLabel}>Buy</Text>
         </TouchableOpacity>
     </View>

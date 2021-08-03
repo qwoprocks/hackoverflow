@@ -1,6 +1,7 @@
 import React from 'react';
 import QRCode from 'react-native-qrcode-generator';
-import { SafeAreaView, View, FlatList, StyleSheet, Text, Image, Pressable, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, FlatList, StyleSheet, Text, Image, Pressable } from 'react-native';
+import { screenOptions } from './LogoutButton';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import moment from 'moment';
 
@@ -100,45 +101,12 @@ function UserQRCode({ route, navigation }) {
 const Stack = createNativeStackNavigator();
 
 
-const headerStyles = StyleSheet.create({
-  logoutButton: {
-      borderRadius: 10,
-      borderColor: 'white',
-      borderWidth: 2,
-      borderStyle: 'solid',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: 60,
-      height: 30,
-      marginRight: 16,
-  },
-  logoutButtonText: {
-      color: 'white',
-  }
-})
 
 const UserVoucherListTab = () => {
   return (
     <Stack.Navigator
       initialRouteName='My Vouchers'
-      screenOptions={{
-        headerRight: () => (
-          <TouchableOpacity
-            style={headerStyles.logoutButton}
-            onPress={async () => await Auth.signOut({ global: true })}
-          >
-              <Text style={headerStyles.logoutButtonText}>Logout</Text>
-          </TouchableOpacity>
-        ),
-        headerBackTitle: 'Back',
-        headerTintColor: '#FFF',
-        headerStyle: {
-          backgroundColor: '#003B70',
-        },
-        headerTitleStyle: {
-          color: '#FFF',
-        },
-      }}
+      screenOptions={screenOptions}
     >
       <Stack.Screen
         name='My Vouchers'
