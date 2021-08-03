@@ -146,7 +146,7 @@ function VoucherCard(props) {
         </View>
         <View style={{ flex: 1 }} />
         <Pressable style={voucherStyles.button}>
-            <Text style={voucherStyles.buttonLabel}>Purchase</Text>
+            <Text style={voucherStyles.buttonLabel}>BUY</Text>
         </Pressable>
     </View>
 }
@@ -202,13 +202,13 @@ const voucherStyles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        width: 70,
-        height: 70,
+        width: 60,
+        height: 60,
         elevation: 5,
     },
     buttonLabel: {
         color: "white",
-        fontSize: 10,
+        fontSize: 16,
         fontWeight: '700',
     }
 });
