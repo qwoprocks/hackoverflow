@@ -1,5 +1,18 @@
-type Todo @model {
+type UserVoucher @model @auth(rules: [{allow: public}]) {
   id: ID!
-  name: String!
-  description: String
+  Voucher: StoreVoucher @connection
+  timebought: AWSDateTime!
+  timeused: AWSDateTime
+  used: Boolean!
 }
+
+type StoreVoucher @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String!
+  shop: String!
+  expiry: AWSDateTime!
+  price: Int!
+  image: String!
+  daysvalid: Int!
+}
+ 

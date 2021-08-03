@@ -13,6 +13,7 @@ import SvgQRCode from 'react-native-qrcode-svg'
 
 import QRScanner from './src/components/QRScanner'
 import UserVoucherListTab from './src/components/UserVoucherListTab'
+import StoreVouchers from './src/components/StoreVouchers'
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
@@ -26,7 +27,7 @@ const App = () => {
   const [formState, setFormState] = useState(initialState)
   const [todos, setTodos] = useState([])
 
-  useEffect(() => {}, [])
+  useEffect(() => { }, [])
 
   function setInput(key, value) {
     setFormState({ ...formState, [key]: value })
@@ -35,33 +36,47 @@ const App = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName='UserVoucherListTab'
+        initialRouteName='StoreVouchers'
         activeColor='white'
         barStyle={{ backgroundColor: '#003B70' }}
       >
-        <Tab.Screen 
-          name='Scan QR Code' 
-          component={QRScanner} 
+        <Tab.Screen
+          name='Scan QR Code'
+          component={QRScanner}
           options={{
             tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons 
-                name='qrcode' 
-                color={color} 
-                size={26} 
+              <MaterialCommunityIcons
+                name='qrcode'
+                color={color}
+                size={26}
               />
             )
           }}
         />
-        <Tab.Screen 
-          name='UserVoucherListTab' 
-          component={UserVoucherListTab} 
+        <Tab.Screen
+          name='UserVoucherListTab'
+          component={UserVoucherListTab}
           options={{
             title: 'My Vouchers',
             tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons 
-                name='ticket-confirmation' 
-                color={color} 
-                size={26} 
+              <MaterialCommunityIcons
+                name='ticket-confirmation'
+                color={color}
+                size={26}
+              />
+            )
+          }}
+        />
+        <Tab.Screen
+          name='StoreVouchers'
+          component={StoreVouchers}
+          options={{
+            title: 'Store Vouchers',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons
+                name='store'
+                color={color}
+                size={26}
               />
             )
           }}
@@ -79,7 +94,7 @@ const App = () => {
 }
 
 const styles = StyleSheet.create({
-  container: { 
+  container: {
     flex: 1,
     justifyContent: 'center',
     paddingLeft: 20,
@@ -97,7 +112,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 8
   },
-  todoName: { 
+  todoName: {
     fontSize: 18
   }
 })

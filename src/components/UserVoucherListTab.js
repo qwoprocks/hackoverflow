@@ -8,32 +8,32 @@ import moment from 'moment';
 const qrIcon = require('../../assets/qr-code.png');
 
 const DATA = [
-    {
-      id: 'id_1',
-      timebought: '2021-08-02T17:30:30Z',
-      timeused: null,
-      used: false,
-      title: '50% off',
-      shop: 'McDonalds',
-      image: 'https://1000logos.net/wp-content/uploads/2017/03/McDonalds-logo-800x450.png',
-      daysvalid: 14
-    },
-    {
-      id: 'id_2',
-      timebought: '2021-08-02T17:30:30Z',
-      timeused: null,
-      used: false,
-      title: '$50 off',
-      shop: 'Burger King',
-      image: 'https://1000logos.net/wp-content/uploads/2016/10/Burger-King_Logo.png',
-      daysvalid: 14
-    }
-  ];
+  {
+    id: 'id_1',
+    timebought: '2021-08-02T17:30:30Z',
+    timeused: null,
+    used: false,
+    title: '50% off',
+    shop: 'McDonalds',
+    image: 'https://1000logos.net/wp-content/uploads/2017/03/McDonalds-logo-800x450.png',
+    daysvalid: 14
+  },
+  {
+    id: 'id_2',
+    timebought: '2021-08-02T17:30:30Z',
+    timeused: null,
+    used: false,
+    title: '$50 off',
+    shop: 'Burger King',
+    image: 'https://1000logos.net/wp-content/uploads/2016/10/Burger-King_Logo.png',
+    daysvalid: 14
+  }
+];
 
 const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation }) => (
   <View style={[styles.container, styles.voucher, styles.shadowProp]}>
     <View style={styles.logo}>
-      <Image 
+      <Image
         style={styles.logo}
         source={{
           uri: logo,
@@ -49,8 +49,8 @@ const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation 
       </Text>
       <Text style={styles.expiry}>
         {moment(timebought).add(daysvalid, 'd').diff(Date.now(), 'days')}D{' '}
-        {moment(timebought).add(daysvalid, 'd').diff(Date.now(), 'hours') 
-         - (moment(timebought).add(daysvalid, 'd').diff(Date.now(), 'days') * 24)}H till expiry
+        {moment(timebought).add(daysvalid, 'd').diff(Date.now(), 'hours')
+          - (moment(timebought).add(daysvalid, 'd').diff(Date.now(), 'days') * 24)}H till expiry
       </Text>
     </View>
     <Button
@@ -59,7 +59,7 @@ const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation 
       iconSource={qrIcon}
       iconStyle={styles.icon}
       onPress={() => navigation.navigate('Show QR Code', {
-        voucherId: {voucherId}
+        voucherId: { voucherId }
       })}
     />
   </View>
@@ -67,8 +67,8 @@ const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation 
 
 function UserVoucherList({ navigation }) {
   const renderVoucher = ({ item }) => (
-    <Item 
-      logo={item.image} 
+    <Item
+      logo={item.image}
       shop={item.shop}
       title={item.title}
       timebought={item.timebought}
@@ -93,7 +93,7 @@ function UserQRCode({ route, navigation }) {
   const { voucherId } = route.params;
   return (
     <View style={styles.qrContainer}>
-        <QRCode size={250} value={voucherId.voucherId} />
+      <QRCode size={250} value={voucherId.voucherId} />
     </View>
   )
 }
@@ -102,7 +102,7 @@ const Stack = createNativeStackNavigator();
 
 function UserVoucherListTab() {
   return (
-    <Stack.Navigator 
+    <Stack.Navigator
       initialRouteName='My Vouchers'
       screenOptions={{
         headerBackTitle: 'Back',
@@ -115,12 +115,12 @@ function UserVoucherListTab() {
         },
       }}
     >
-      <Stack.Screen 
-        name='My Vouchers' 
-        component={UserVoucherList} 
+      <Stack.Screen
+        name='My Vouchers'
+        component={UserVoucherList}
       />
-      <Stack.Screen 
-        name='Show QR Code' 
+      <Stack.Screen
+        name='Show QR Code'
         component={UserQRCode}
       />
     </Stack.Navigator>
