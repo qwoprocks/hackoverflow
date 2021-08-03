@@ -1,7 +1,6 @@
 import React from 'react';
 import QRCode from 'react-native-qrcode-generator';
-import { SafeAreaView, View, FlatList, StyleSheet, Text, Image } from 'react-native';
-import { Button } from 'react-native-ui-lib';
+import { SafeAreaView, View, FlatList, StyleSheet, Text, Image, Button } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import moment from 'moment';
 
@@ -57,6 +56,7 @@ const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation 
       style={[styles.button, styles.shadowProp]}
       borderRadius={10}
       iconSource={qrIcon}
+      title="QR HERE"
       iconStyle={styles.icon}
       onPress={() => navigation.navigate('Show QR Code', {
         voucherId: { voucherId }

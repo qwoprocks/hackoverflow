@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react"
 
 import { DataStore } from "@aws-amplify/datastore"
 import { StoreVoucher, UserVoucher } from "../models"
-import { FlatList, StyleSheet, SafeAreaView, Text, Image } from "react-native"
+import { FlatList, StyleSheet, SafeAreaView, Text, Image, View, Pressable } from "react-native"
 import { ActivityIndicator } from "react-native-paper"
-import { View, Button } from "react-native-ui-lib"
 import { SearchBar } from "react-native-elements"
 
 export default function StoreVouchers() {
@@ -57,7 +56,7 @@ function Header() {
 }
 
 function Loading() {
-    return <View flex center><ActivityIndicator size="large" /></View>
+    return <View ><ActivityIndicator size="large" /></View>
 }
 
 const searchBarStyles = StyleSheet.create({
@@ -145,25 +144,19 @@ function VoucherCard(props) {
                 ${(voucher.price / 100).toFixed(2)}
             </Text>
         </View>
-        <Button
-            style={[voucherStyles.button, voucherStyles.shadowProp]}
-            label="Purchase"
-            labelStyle={voucherStyles.buttonLabel}
-            borderRadius={10}
-            onPress={purchaseVoucher}
-        />
+        <View style={{ flex: 1 }} />
+        <Pressable style={voucherStyles.button}>
+            <Text style={voucherStyles.buttonLabel}>Purchase</Text>
+        </Pressable>
     </View>
 }
 
 const voucherStyles = StyleSheet.create({
     container: {
+        display: "flex",
         flex: 1,
         flexDirection: 'row',
         marginTop: 4,
-    },
-    buttonLabel: {
-        fontWeight: '700',
-        fontSize: 10,
     },
     voucher: {
         backgroundColor: 'white',
@@ -204,9 +197,18 @@ const voucherStyles = StyleSheet.create({
         fontSize: 14,
     },
     button: {
-        marginLeft: 'auto',
+        backgroundColor: "#003B70",
+        borderRadius: 10,
         alignSelf: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
         width: 70,
         height: 70,
+        elevation: 5,
     },
+    buttonLabel: {
+        color: "white",
+        fontSize: 10,
+        fontWeight: '700',
+    }
 });
