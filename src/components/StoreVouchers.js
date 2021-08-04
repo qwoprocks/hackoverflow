@@ -50,7 +50,6 @@ export default function StoreVouchers(props) {
         const user = await Auth.currentAuthenticatedUser();
         const username = user.username.toLowerCase();
         const storeProfileQuery = await DataStore.query(StoreProfile, c => c.username('eq', username))
-        console.log(storeProfileQuery)
         if (storeProfileQuery.length > 0) {
           setIsStore(true)
         } else {
@@ -74,7 +73,7 @@ export default function StoreVouchers(props) {
         {isLoading
             ? <Loading />
             :
-            <View>
+            <View style={{ flex: 1 }}>
                 <StoreVoucherList 
                     storeVouchers={storeVouchers} 
                     navigation={props.navigation} 
@@ -168,6 +167,8 @@ function ConfirmationDialog(props) {
         <AwesomeAlert
             show={props.alertOptions.visible}
             showProgress={false}
+            animatedValue={0}
+            useNativeDriver={true}
             title={props.alertOptions.shop + ' ' + props.alertOptions.title}
             message={`Do you want to purchase this item? You will be charged $${(props.alertOptions.price / 100).toFixed(2)}.`}
             closeOnTouchOutside={true}
@@ -183,8 +184,8 @@ function ConfirmationDialog(props) {
                 props.alertOptions.setShowDialog(false)
             }}
             onConfirmPressed={() => {
-                props.alertOptions.handlePurchase()
                 props.alertOptions.setShowDialog(false)
+                setTimeout(() => props.alertOptions.handlePurchase(), 500);
             }}
         />
     );
@@ -294,7 +295,6 @@ function VoucherCard(props) {
         } catch (e) {
             console.error("Error creating user voucher", e)
         }
-
     }
 
     return <View style={[voucherStyles.container, voucherStyles.voucher, voucherStyles.shadowProp]}>
@@ -334,7 +334,8 @@ function VoucherCard(props) {
                                 shop: voucher.shop,
                                 title: voucher.title,
                                 price: voucher.price,
-                                handlePurchase: purchaseVoucher,
+                                handlePurchase: () => undefined,
+                                setShowDialog: () => undefined,
                             })
                         }
                     })
