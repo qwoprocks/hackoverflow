@@ -27,8 +27,6 @@ Amplify.configure({
   }
 })
 
-console.log(Auth.configure())
-
 const initialState = { name: '', description: '' }
 const Tab = createMaterialBottomTabNavigator();
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -208,8 +206,6 @@ class MyConfirmSignUp extends AuthPiece<
               money: 0,
             })
           )
-          console.log(userData)
-          console.log("saved")
         } catch (error) {
           console.error(error)
         }
