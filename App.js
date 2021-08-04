@@ -4,19 +4,23 @@ import {
   View, Text, StyleSheet, TextInput, Button, Image
 } from 'react-native'
 
-import Amplify, { Auth } from 'aws-amplify'
-import config from './src/aws-exports'
-import { DataStore } from "@aws-amplify/datastore"
-
-import QRScanner from './src/components/QRScanner'
-import UserVoucherListTab from './src/components/UserVoucherListTab'
-import StoreVouchers from './src/components/StoreVouchers'
 import { NavigationContainer } from '@react-navigation/native';
 import { getHeaderTitle } from '@react-navigation/elements';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { GiftVoucher, StoreProfile } from './src/models';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import Amplify, { Auth } from 'aws-amplify'
+import { DataStore } from "@aws-amplify/datastore"
 
 import { withAuthenticator, AmplifyTheme, SignIn, SignUp, ForgotPassword, ConfirmSignUp } from 'aws-amplify-react-native'
+
+import config from './src/aws-exports'
+import { GiftVoucher, StoreProfile } from './src/models';
+import QRScanner from './src/components/QRScanner'
+import UserVoucherListTab from './src/components/UserVoucherListTab'
+import StoreVouchers from './src/components/StoreVouchers'
+import CustomConfirmSignUp from './src/components/CustomConfirmSignUp'
+import LoginHeader from './src/components/LoginHeader'
 
 Amplify.configure({
   ...config,
@@ -30,7 +34,6 @@ Amplify.configure({
 
 const initialState = { name: '', description: '' }
 const Tab = createMaterialBottomTabNavigator();
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const App = () => {
   const [formState, setFormState] = useState(initialState)
@@ -42,7 +45,6 @@ const App = () => {
       const user = await Auth.currentAuthenticatedUser();
       const username = user.username.toLowerCase();
       const storeProfileQuery = await DataStore.query(StoreProfile, c => c.username('eq', username))
-      console.log(storeProfileQuery)
       if (storeProfileQuery.length > 0) {
         setIsStore(true)
       } else {
@@ -171,6 +173,7 @@ const MyButtonDisabled = Object.assign({}, AmplifyTheme.buttonDisabled, {
   alignItems: 'center',
   padding: 16,
   backgroundColor: '#496075',
+  borderRadius: 8
 });
 const MySectionFooterLink = Object.assign({}, AmplifyTheme.sectionFooterLink, {
   flexDirection: 'column',
@@ -194,150 +197,6 @@ const MyTheme = Object.assign({}, AmplifyTheme, {
   sectionFooterLink: MySectionFooterLink
 });
 
-import { UserProfile } from './src/models'
-import { I18n, Logger } from 'aws-amplify';
-import {
-  AuthPiece, IAuthPieceProps, IAuthPieceState,
-  FormField,
-  LinkCell,
-  Header,
-  ErrorRow,
-  AmplifyButton,
-  SignedOutMessage,
-  Wrapper
-} from 'aws-amplify-react-native';
-import StoreManagement from './src/components/StoreManagement';
-
-const logger = new Logger('ConfirmSignUp');
-
-interface IConfirmSignUpProps extends IAuthPieceProps { }
-
-interface IConfirmSignUpState extends IAuthPieceState {
-  code: string | null;
-}
-
-class MyConfirmSignUp extends AuthPiece<
-  IConfirmSignUpProps,
-  IConfirmSignUpState
-> {
-  constructor(props: IConfirmSignUpProps) {
-    super(props);
-
-    this._validAuthStates = ['confirmSignUp'];
-    this.state = {
-      username: null,
-      code: null,
-      error: null,
-    };
-
-    this.confirm = this.confirm.bind(this);
-    this.resend = this.resend.bind(this);
-  }
-
-  confirm() {
-    const { code } = this.state;
-    const username = this.getUsernameFromInput();
-    logger.debug('Confirm Sign Up for ' + username);
-    Auth.confirmSignUp(username, code)
-      .then(async (data) => {
-        this.changeState('signedUp')
-        try {
-          const userData = await DataStore.save(
-            new UserProfile({
-              username: username.toLowerCase(),
-              money: 0,
-            })
-          )
-        } catch (error) {
-          console.error(error)
-        }
-      })
-      .catch(err => this.error(err));
-  }
-
-  resend() {
-    const username = this.getUsernameFromInput();
-    logger.debug('Resend Sign Up for ' + username);
-    Auth.resendSignUp(username)
-      .then(() => logger.debug('code sent'))
-      .catch(err => this.error(err));
-  }
-
-  static getDerivedStateFromProps(props, state) {
-    const username = props.authData;
-
-    if (username && !state.username) {
-      return { [props.usernameAttributes]: username };
-    }
-
-    return null;
-  }
-
-  showComponent(theme) {
-    const username = this.getUsernameFromInput();
-    return (
-      <Wrapper>
-        <View style={theme.section}>
-          <View>
-            <Header theme={theme}>
-              {I18n.get('Confirm Sign Up')}
-            </Header>
-            <View style={theme.sectionBody}>
-              {this.renderUsernameField(theme)}
-              <FormField
-                theme={theme}
-                onChangeText={text => this.setState({ code: text })}
-                label={I18n.get('Confirmation Code')}
-                placeholder={I18n.get('Enter your confirmation code')}
-                required={true}
-              />
-              <AmplifyButton
-                theme={theme}
-                text={I18n.get('Confirm')}
-                onPress={this.confirm}
-                disabled={!username || !this.state.code}
-              />
-            </View>
-            <View style={theme.sectionFooter}>
-              <LinkCell
-                theme={theme}
-                onPress={this.resend}
-                disabled={!this.state.username}
-              >
-                {I18n.get('Resend code')}
-              </LinkCell>
-              <LinkCell
-                theme={theme}
-                onPress={() => this.changeState('signIn')}
-              >
-                {I18n.get('Back to Sign In')}
-              </LinkCell>
-            </View>
-            <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-          </View>
-          <SignedOutMessage {...this.props} />
-        </View>
-      </Wrapper>
-    );
-  }
-}
-
-function LoginHeader() {
-  return (
-    <View style={{ height: 180, marginTop: 80 }}>
-      <Image
-        source={require('./assets/qr-code-scan.png')}
-        style={{ width: 100, height: 100, alignSelf: 'center' }}
-      />
-      <Text
-        style={{ textAlign: 'center', marginTop: 20, fontSize: 24, fontWeight: '600' }}
-      >
-        QRPay
-      </Text>
-    </View>
-  );
-}
-
 export default withAuthenticator(App, {
   theme: MyTheme,
   authenticatorComponents: [
@@ -349,6 +208,6 @@ export default withAuthenticator(App, {
       signUpFields: [{ name: 'preferred_username', key: 'preferred_username', label: 'Display Name (Optional)', required: false }]
     }} />,
     <ForgotPassword />,
-    <MyConfirmSignUp />
+    <CustomConfirmSignUp />
   ]
 })
