@@ -14,6 +14,7 @@ import StoreVouchers from './src/components/StoreVouchers'
 import { NavigationContainer } from '@react-navigation/native';
 import { getHeaderTitle } from '@react-navigation/elements';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { StoreProfile } from './src/models';
 
 import { withAuthenticator, AmplifyTheme, SignIn, SignUp, ForgotPassword, ConfirmSignUp } from 'aws-amplify-react-native'
 
@@ -34,6 +35,18 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 const App = () => {
   const [formState, setFormState] = useState(initialState)
   const [todos, setTodos] = useState([])
+  const [isStore, setIsStore] = useState(false)
+
+  useEffect(async () => {
+    const user = await Auth.currentAuthenticatedUser();
+    const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
+    const storeProfileQuery = await DataStore.query(StoreProfile, c => c.username('eq', username));
+    if (storeProfileQuery.length > 0) {
+      setIsStore(true)
+    } else {
+      setIsStore(false)
+    }
+  }, [])
 
   const setInput = (key, value) => {
     setFormState({ ...formState, [key]: value })
@@ -47,24 +60,26 @@ const App = () => {
         barStyle={styles.bar}
         shifting={true}
       >
-        <Tab.Screen
-          name='UserVoucherListTab'
-          component={UserVoucherListTab}
-          options={{
-            title: 'Vouchers',
-            tabBarIcon: ({ focused, color }) => (
-              <MaterialCommunityIcons
-                name={
-                  focused
-                    ? 'ticket-confirmation'
-                    : 'ticket-confirmation-outline'
-                }
-                color={color}
-                size={26}
-              />
-            )
-          }}
-        />
+        {
+          !isStore && <Tab.Screen
+            name='UserVoucherListTab'
+            component={UserVoucherListTab}
+            options={{
+              title: 'Vouchers',
+              tabBarIcon: ({ focused, color }) => (
+                <MaterialCommunityIcons
+                  name={
+                    focused
+                      ? 'ticket-confirmation'
+                      : 'ticket-confirmation-outline'
+                  }
+                  color={color}
+                  size={26}
+                />
+              )
+            }}
+          />
+        }
         <Tab.Screen
           name='Scan'
           component={QRScanner}
@@ -96,24 +111,26 @@ const App = () => {
             )
           }}
         />
-        <Tab.Screen
-          name="StoreManagement"
-          component={StoreManagement}
-          options={{
-            title: 'Manage',
-            tabBarIcon: ({ focused, color }) => (
-              <MaterialCommunityIcons
-                name={
-                  focused
-                    ? 'store'
-                    : 'store-outline'
-                }
-                color={color}
-                size={26}
-              />
-            )
-          }}
-        />
+        {
+          isStore && <Tab.Screen
+            name="StoreManagement"
+            component={StoreManagement}
+            options={{
+              title: 'Manage',
+              tabBarIcon: ({ focused, color }) => (
+                <MaterialCommunityIcons
+                  name={
+                    focused
+                      ? 'store'
+                      : 'store-outline'
+                  }
+                  color={color}
+                  size={26}
+                />
+              )
+            }}
+          />
+        }
       </Tab.Navigator>
     </NavigationContainer>
   )
@@ -222,7 +239,7 @@ class MyConfirmSignUp extends AuthPiece<
         try {
           const userData = await DataStore.save(
             new UserProfile({
-              username: username,
+              username: username.toLowerCase(),
               money: 0,
             })
           )

@@ -6,8 +6,10 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Loading from './Loading';
 import Header from "./Header";
+import { Input } from 'react-native-elements';
 import { NavigationContainer } from "@react-navigation/native";
 import { TextInput } from "react-native-paper";
+import { ScrollView } from "react-native-gesture-handler";
 
 const USERNAME = "grab"
 
@@ -47,8 +49,8 @@ export default function StoreManagement({ navigation }) {
         return <Store openCreatePage={() => navigation.navigate("CreateVoucher")} profile={storeProfile} storeVouchers={storeVouchers} userVouchers={userVouchers} update={getAllVouchers} />
     }
 
-    function Create() {
-        return <CreateVoucher update={getAllVouchers} storeProfile={storeProfile} />
+    function Create(props) {
+        return <CreateVoucher {...props} update={getAllVouchers} storeProfile={storeProfile} />
     }
 
     return <>
@@ -93,37 +95,90 @@ const createStyles = StyleSheet.create({
         display: 'flex',
         marginHorizontal: 20,
         marginVertical: 20,
+
     },
     label: {
         fontSize: 20,
         color: "#003B70",
+        fontWeight: 'bold',
+        marginVertical: 5,
+        marginLeft: 12,
     },
-    input: {
+    button: {
+        height: 40,
+        backgroundColor: "#003B70",
         borderRadius: 20,
+        marginTop: 30,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold'
+    },
+    errorContainer: {
+        marginTop: 10,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    error: {
+        color: 'red',
+        fontSize: 18,
+        fontWeight: 'bold'
     }
 })
 
-function CreateVoucher({ update, storeProfile }) {
+function CreateVoucher({ update, storeProfile, navigation }) {
     const [title, setTitle] = useState("")
     const [price, setPrice] = useState("")
     const [daysvalid, setValid] = useState("")
     const [expiry, setExpiry] = useState("")
     const [image, setImage] = useState("")
 
+    const [error, setError] = useState("")
+
     async function createStoreVoucher() {
-        const mock = new StoreVoucher({
-            "daysvalid": 14,
-            "expiry": "2021-08-14T23:59Z",
-            "image": "https://i.pinimg.com/originals/8c/bf/a8/8cbfa8b08311fccc62a5558f4cc86ffe.png",
-            "price": 900,
-            "shop": "Grab",
-            "storeprofileID": "ca73fab2-bf1d-4583-8c0f-eeaaa5ec7f4d",
-            "title": "$10 Grab Voucher",
+
+        if (!title || !price || !daysvalid || !expiry) {
+            setError("Missing fields")
+            return;
+        }
+
+        if (isNaN(parseInt(price))) {
+            setError("Price must be a number")
+            return;
+        }
+
+        if (isNaN(parseInt(daysvalid))) {
+            setError("Days Valid must be a number")
+            return;
+        }
+
+        if (isNaN(parseInt(expiry))) {
+            setError("Expiry must be a number")
+            return;
+        }
+
+        var date = new Date()
+        date.setDate(date.getDate() + parseInt(expiry))
+
+        const voucher = new StoreVoucher({
+            title,
+            price: parseInt(price),
+            daysvalid: parseInt(daysvalid),
+            image: image || "https://i.stack.imgur.com/y9DpT.jpg",
+            shop: storeProfile.shopname,
+            storeprofileID: storeProfile.id,
+            expiry: date.toISOString()
+
         })
 
-        await DataStore.save(mock)
+        await DataStore.save(voucher)
 
         await update()
+        navigation.pop()
+
     }
 
     function renderPreview() {
@@ -147,34 +202,41 @@ function CreateVoucher({ update, storeProfile }) {
 
     }
 
-    return <View style={createStyles.container}>
+    return <ScrollView style={createStyles.container}>
         <Text style={createStyles.label}>Title</Text>
-        <TextInput
+        <Input
             style={createStyles.input}
             value={title}
             onChangeText={setTitle} />
         <Text style={createStyles.label}>Price (in cents)</Text>
-        <TextInput
+        <Input
             style={createStyles.input}
             value={price}
             onChangeText={setPrice} />
         <Text style={createStyles.label}>Days valid after purchase</Text>
-        <TextInput
+        <Input
             style={createStyles.input}
             value={daysvalid}
             onChangeText={setValid} />
         <Text style={createStyles.label}>Days to expiry</Text>
-        <TextInput
+        <Input
             style={createStyles.input}
             value={expiry}
             onChangeText={setExpiry} />
         <Text style={createStyles.label}>Image URL</Text>
-        <TextInput
+        <Input
             style={createStyles.input}
             value={image}
             onChangeText={setImage} />
         {renderPreview()}
-    </View>
+        <TouchableOpacity onPress={createStoreVoucher} style={createStyles.button}>
+            <Text style={createStyles.buttonText}>Create</Text>
+        </TouchableOpacity>
+        <View style={createStyles.errorContainer}>
+            <Text style={createStyles.error}>{error}</Text>
+        </View>
+
+    </ScrollView>
 }
 
 const storeStyles = StyleSheet.create({
