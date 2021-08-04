@@ -12,6 +12,7 @@ import { UserVoucher, UserProfile } from "../models"
 import { useIsFocused } from "@react-navigation/native";
 import { SearchBar } from "react-native-elements"
 import Loading from './Loading'
+import * as FileSystem from 'expo-file-system'
 
 function UserVouchers({ navigation }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -84,7 +85,7 @@ const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation 
     <TouchableOpacity
       style={styles.button}
       onPress={() => navigation.navigate('Show QR Code', {
-        voucherId: { voucherId }
+        voucher: { voucherId, logo },
       })}
     >
       <MaterialCommunityIcons
@@ -234,16 +235,35 @@ const searchBarStyles = StyleSheet.create({
 })
 
 const UserQRCode = ({ route, navigation }) => {
-  const { voucherId } = route.params;
+  const { voucherId, logo } = route.params.voucher;
+  const [base64, setBase64] = useState();
 
-  return (
+  useEffect(() => {
+    getLogo()
+  }, [])
+
+  async function getLogo() {
+    const result = await FileSystem.downloadAsync(
+      logo,
+      FileSystem.cacheDirectory + "logo.tmp"
+    )
+    const base64 = await FileSystem.readAsStringAsync(result.uri, { encoding: "base64" })
+    setBase64(`data:${result.headers["content-type"]};base64,${base64}`)
+
+  }
+
+  return base64 ? (
     <View>
       <SvgQRCode
         value={voucherId.voucherId}
+        logo={{ uri: base64 }}
+        logoSize={50}
+        logoBackgroundColor='white'
         size={250}
       />
     </View>
   )
+    : <Loading />
 }
 
 const Stack = createNativeStackNavigator();
