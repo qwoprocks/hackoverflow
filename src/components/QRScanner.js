@@ -19,8 +19,6 @@ export default function QRScanner() {
 
   const handleBarCodeScanned = (data) => {
     if (!data) return
-    console.log('scanned')
-    console.log(data)
     alert(`Bar code with data ${data} has been scanned!`)
   };
 
@@ -39,7 +37,7 @@ export default function QRScanner() {
       {
         Platform.OS === 'web' ? (
           <QrReader
-            delay={100}
+            delay={10}
             onError={handleBarCodeError}
             onScan={handleBarCodeScanned}
             style={{ display: 'flex', alignSelf: 'center', width: 'min(100vw, 100vh)', height: 'min(100vw, 100vh)' }}

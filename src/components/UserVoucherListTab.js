@@ -244,8 +244,8 @@ const UserQRCode = ({ route, navigation }) => {
   const { voucherId } = route.params;
 
   return (
-    <View style={styles.qrContainer}>
-      <SvgQRCode 
+    <View>
+      <SvgQRCode
         value={voucherId.voucherId}
         size={250}
       />
@@ -283,6 +283,9 @@ const UserVoucherListTab = () => {
       <Stack.Screen
         name='Show QR Code'
         component={UserQRCode}
+        options={{
+          contentStyle: styles.qrContainer
+        }}
       />
       <Stack.Screen
         name="Transaction History"
@@ -362,9 +365,9 @@ const styles = StyleSheet.create({
   },
   qrContainer: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-  }
+    justifyContent: 'center',
+  },
 });
 
 export default UserVoucherListTab;
