@@ -108,59 +108,20 @@ const accountStyles = StyleSheet.create({
     borderRadius: 30,
     alignItems: "center",
   },
-  title: {
-    flex: 1,
-    fontSize: 12,
-    color: "white"
-  },
-  balance: {
-    flex: 3,
-    flexDirection: 'row',
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  currency: {
-    color: "white",
-    fontSize: 10,
-  },
-  money: {
-    marginLeft: 5,
-    color: "white",
-    fontSize: 24,
-    fontWeight: "bold"
-  },
-  user: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  userText: {
-    color: "white",
-    fontSize: 10,
-    fontWeight: 'bold'
-  }
 })
 
 function AccountBalance(props) {
-  const { username, money } = props.user
+  const { money } = props.user
 
-  return (<View style={accountStyles.container}>
-    <Text style={accountStyles.title}>Account Balance</Text>
-    <View style={accountStyles.balance}>
-      <Text style={accountStyles.currency}>SGD</Text>
-      <Text style={accountStyles.money}>{'$' + (money / 100).toFixed(2)}</Text>
+  return (
+    <View style={accountStyles.container}>
+      <Text style={accountStyles.title}>Account Balance</Text>
+      <View style={accountStyles.balance}>
+        <Text style={accountStyles.currency}>SGD</Text>
+        <Text style={accountStyles.money}>{'$' + (money / 100).toFixed(2)}</Text>
+      </View>
     </View>
-    <View style={accountStyles.user}>
-      <Text style={accountStyles.userText}>{username}</Text>
-      <View style={{ flex: 1 }} />
-      <TouchableOpacity onPress={props.toTransactionHistory}>
-        <Text style={accountStyles.userText}>Transaction History</Text>
-      </TouchableOpacity>
-    </View>
-  </View>)
-}
-
-function TransactionHistory(props) {
-  return <View></View>
+  )
 }
 
 function UserVoucherList(props) {
@@ -195,8 +156,8 @@ function UserVoucherList(props) {
       <Header />
       <AccountBalance
         user={user}
-        toTransactionHistory={() => props.navigation.navigate("Transaction History")}
-        userVouchers={userVouchers} />
+        userVouchers={userVouchers} 
+      />
       <SearchBar
         value={filter}
         onChangeText={setFilter}
@@ -303,10 +264,6 @@ const UserVoucherListTab = () => {
         options={{
           contentStyle: styles.qrContainer
         }}
-      />
-      <Stack.Screen
-        name="Transaction History"
-        component={TransactionHistory}
       />
     </Stack.Navigator>
   )
