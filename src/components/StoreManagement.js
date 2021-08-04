@@ -1,7 +1,8 @@
 import { DataStore } from "@aws-amplify/datastore"
 import React, { useState, useEffect } from 'react'
-import { View, StyleSheet, Text, SafeAreaView, StatusBar, Image, FlatList } from "react-native";
+import { View, StyleSheet, Text, SafeAreaView, StatusBar, Image, FlatList, TouchableOpacity } from "react-native";
 import { StoreVoucher, UserVoucher, StoreProfile } from '../models';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Loading from './Loading';
 import Header from "./Header";
 
@@ -151,7 +152,20 @@ function StoreVoucherList({ vouchers }) {
     }
 
     return <View>
-        <Text style={voucherStyles.heading}>Vouchers</Text>
+        <View style={voucherStyles.headingRow}>
+            <Text style={voucherStyles.heading}>Vouchers</Text>
+            <View style={{ flex: 1 }} />
+            <TouchableOpacity style={voucherStyles.addButton}>
+                <Text style={voucherStyles.addButtonText}>CREATE</Text>
+                <MaterialCommunityIcons
+                    name='plus-thick'
+                    size={20}
+                    color="white"
+                />
+            </TouchableOpacity>
+
+        </View>
+
         <FlatList
             data={vouchers}
             renderItem={renderVoucher}
@@ -199,11 +213,32 @@ const voucherStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    headingRow: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 14,
+        marginHorizontal: 16,
+    },
     heading: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginVertical: 14,
-        marginHorizontal: 16,
+
+    },
+    addButton: {
+        flexDirection: 'row',
+        backgroundColor: '#003B70',
+        borderRadius: 20,
+        paddingHorizontal: 20,
+        height: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    addButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+        marginRight: 8
     },
     voucher: {
         backgroundColor: 'white',
