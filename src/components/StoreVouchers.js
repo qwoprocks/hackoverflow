@@ -215,7 +215,7 @@ function VoucherCard(props) {
             setModalVisible(true);
             console.log("saved", result);
         } catch (e) {
-            console.log("Error creating user voucher", e)
+            console.error("Error creating user voucher", e)
         }
 
     }
