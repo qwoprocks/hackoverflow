@@ -276,6 +276,7 @@ const Stack = createNativeStackNavigator();
 const UserVoucherListTab = () => {
   return (
     <Stack.Navigator
+      style={{ flex: 1 }}
       initialRouteName='My Vouchers'
       screenOptions={{
         headerStyle: {

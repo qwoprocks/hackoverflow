@@ -57,7 +57,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName='StoreVouchers'
+        initialRouteName='StoreManagement'
         activeColor='#003B70'
         barStyle={styles.bar}
         shifting={true}
