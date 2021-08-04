@@ -3,11 +3,24 @@ import { Text, View, StyleSheet, Button, TouchableOpacity, Platform } from 'reac
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Camera } from 'expo-camera';
 import QrReader from 'react-qr-reader'
-
+import { Auth } from 'aws-amplify'
+import { DataStore } from "@aws-amplify/datastore"
+import { StoreProfile } from '../models';
 
 export default function QRScanner() {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
+  const [isStore, setIsStore] = useState(false)
+
+  useEffect(async () => {
+    const username = await Auth.currentAuthenticatedUser()
+    const storeProfileQuery = await DataStore.query(StoreProfile, c => c.username('eq', username));
+    if (storeProfileQuery.length > 0) {
+      setIsStore(true)
+    } else {
+      setIsStore(false)
+    }
+  }, [])
 
   useEffect(() => {
     (async () => {
@@ -19,7 +32,11 @@ export default function QRScanner() {
 
   const handleBarCodeScanned = (data) => {
     if (!data) return
-    alert(`Bar code with data ${data} has been scanned!`)
+    if (isStore) {
+      alert(`Bar code with data ${data} has been scanned!`)
+    } else {
+      alert(`You have claimed gift voucher ${data}`)
+    }
   };
 
   const handleBarCodeError = () => {
