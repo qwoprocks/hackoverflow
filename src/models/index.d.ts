@@ -4,22 +4,6 @@ import { ModelInit, MutableModel, PersistentModelConstructor } from "@aws-amplif
 
 
 
-type StoreProfileMetaData = {
-  readOnlyFields: 'createdAt' | 'updatedAt';
-}
-
-type StoreVoucherMetaData = {
-  readOnlyFields: 'createdAt' | 'updatedAt';
-}
-
-type UserProfileMetaData = {
-  readOnlyFields: 'createdAt' | 'updatedAt';
-}
-
-type UserVoucherMetaData = {
-  readOnlyFields: 'createdAt' | 'updatedAt';
-}
-
 export declare class StoreProfile {
   readonly id: string;
   readonly username: string;
@@ -27,8 +11,8 @@ export declare class StoreProfile {
   readonly StoreVouchers?: (StoreVoucher | null)[];
   readonly createdAt?: string;
   readonly updatedAt?: string;
-  constructor(init: ModelInit<StoreProfile, StoreProfileMetaData>);
-  static copyOf(source: StoreProfile, mutator: (draft: MutableModel<StoreProfile, StoreProfileMetaData>) => MutableModel<StoreProfile, StoreProfileMetaData> | void): StoreProfile;
+  constructor(init: ModelInit<StoreProfile>);
+  static copyOf(source: StoreProfile, mutator: (draft: MutableModel<StoreProfile>) => MutableModel<StoreProfile> | void): StoreProfile;
 }
 
 export declare class StoreVoucher {
@@ -42,8 +26,8 @@ export declare class StoreVoucher {
   readonly storeprofileID?: string;
   readonly createdAt?: string;
   readonly updatedAt?: string;
-  constructor(init: ModelInit<StoreVoucher, StoreVoucherMetaData>);
-  static copyOf(source: StoreVoucher, mutator: (draft: MutableModel<StoreVoucher, StoreVoucherMetaData>) => MutableModel<StoreVoucher, StoreVoucherMetaData> | void): StoreVoucher;
+  constructor(init: ModelInit<StoreVoucher>);
+  static copyOf(source: StoreVoucher, mutator: (draft: MutableModel<StoreVoucher>) => MutableModel<StoreVoucher> | void): StoreVoucher;
 }
 
 export declare class UserProfile {
@@ -53,8 +37,8 @@ export declare class UserProfile {
   readonly money: number;
   readonly createdAt?: string;
   readonly updatedAt?: string;
-  constructor(init: ModelInit<UserProfile, UserProfileMetaData>);
-  static copyOf(source: UserProfile, mutator: (draft: MutableModel<UserProfile, UserProfileMetaData>) => MutableModel<UserProfile, UserProfileMetaData> | void): UserProfile;
+  constructor(init: ModelInit<UserProfile>);
+  static copyOf(source: UserProfile, mutator: (draft: MutableModel<UserProfile>) => MutableModel<UserProfile> | void): UserProfile;
 }
 
 export declare class UserVoucher {
@@ -66,6 +50,6 @@ export declare class UserVoucher {
   readonly profileID?: string;
   readonly createdAt?: string;
   readonly updatedAt?: string;
-  constructor(init: ModelInit<UserVoucher, UserVoucherMetaData>);
-  static copyOf(source: UserVoucher, mutator: (draft: MutableModel<UserVoucher, UserVoucherMetaData>) => MutableModel<UserVoucher, UserVoucherMetaData> | void): UserVoucher;
+  constructor(init: ModelInit<UserVoucher>);
+  static copyOf(source: UserVoucher, mutator: (draft: MutableModel<UserVoucher>) => MutableModel<UserVoucher> | void): UserVoucher;
 }

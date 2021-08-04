@@ -14,7 +14,8 @@ import { SearchBar } from "react-native-elements"
 
 function UserVouchers({ navigation }) {
   const [isLoading, setIsLoading] = useState(true);
-  const [userVouchers, setUserVouchers] = useState([]); 
+  const [userVouchers, setUserVouchers] = useState([]);
+  const [user, setUser] = useState(null);
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -26,34 +27,35 @@ function UserVouchers({ navigation }) {
   async function getAllUserVouchers() {
     const user = await Auth.currentAuthenticatedUser();
     const username = user.signInUserSession.accessToken.payload.username;
-    const userProfileQuery = await DataStore.query(UserProfile, 
-        c => c.username('eq', username));
+    const userProfileQuery = await DataStore.query(UserProfile,
+      c => c.username('eq', username));
     const userProfile = userProfileQuery[0];
     const vouchers = await DataStore.query(UserVoucher,
       c => c.profileID('eq', userProfile.id).used('eq', false));
     setUserVouchers(vouchers)
+    setUser(userProfile)
     setIsLoading(false)
   }
 
-  return ( 
+  return (
     <>
       {isLoading
-       ? <Loading />
-       : <UserVoucherList userVouchers={userVouchers} navigation={navigation} />}
+        ? <Loading />
+        : <UserVoucherList user={user} userVouchers={userVouchers} navigation={navigation} />}
     </>
   );
 }
 
 function Loading() {
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <ActivityIndicator size="large" color="#003B70" />
     </View>
   );
 }
 
 function Header() {
-  return(
+  return (
     <View style={styles.header}>
       <Text style={styles.headerText}>
         My Vouchers
@@ -101,8 +103,74 @@ const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation 
   </View>
 );
 
+const accountStyles = StyleSheet.create({
+  container: {
+    display: "flex",
+    marginHorizontal: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+    height: 100,
+    backgroundColor: "#003B70",
+    borderRadius: 30,
+    alignItems: "center",
+  },
+  title: {
+    flex: 1,
+    fontSize: 12,
+    color: "white"
+  },
+  balance: {
+    flex: 3,
+    flexDirection: 'row',
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  currency: {
+    color: "white",
+    fontSize: 10,
+  },
+  money: {
+    marginLeft: 5,
+    color: "white",
+    fontSize: 24,
+    fontWeight: "bold"
+  },
+  user: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  userText: {
+    color: "white",
+    fontSize: 10,
+    fontWeight: 'bold'
+  }
+})
+
+function AccountBalance(props) {
+  const { username, money } = props.user
+
+  return (<View style={accountStyles.container}>
+    <Text style={accountStyles.title}>Account Balance</Text>
+    <View style={accountStyles.balance}>
+      <Text style={accountStyles.currency}>SGD</Text>
+      <Text style={accountStyles.money}>{'$' + (money / 100).toFixed(2)}</Text>
+    </View>
+    <View style={accountStyles.user}>
+      <Text style={accountStyles.userText}>{username}</Text>
+      <View style={{ flex: 1 }} />
+      <TouchableOpacity onPress={props.toTransactionHistory}>
+        <Text style={accountStyles.userText}>Transaction History</Text>
+      </TouchableOpacity>
+    </View>
+  </View>)
+}
+
+function TransactionHistory(props) {
+  return <View></View>
+}
+
 function UserVoucherList(props) {
-  const { userVouchers } = props;
+  const { userVouchers, user } = props;
   const [filter, setFilter] = useState('')
 
   const filteredUserVouchers = userVouchers.filter(
@@ -131,6 +199,10 @@ function UserVoucherList(props) {
   return (
     <View style={styles.containerWithHeader}>
       <Header />
+      <AccountBalance
+        user={user}
+        toTransactionHistory={() => props.navigation.navigate("Transaction History")}
+        userVouchers={userVouchers} />
       <SearchBar
         value={filter}
         onChangeText={setFilter}
@@ -153,18 +225,18 @@ function UserVoucherList(props) {
 
 const searchBarStyles = StyleSheet.create({
   container: {
-      flexDirection: "row",
-      backgroundColor: "transparent",
-      borderTopColor: "transparent",
-      borderBottomColor: "transparent",
+    flexDirection: "row",
+    backgroundColor: "transparent",
+    borderTopColor: "transparent",
+    borderBottomColor: "transparent",
   },
   input: {
-      backgroundColor: "white",
-      marginLeft: 10,
-      marginRight: 10,
-      paddingLeft: 10,
-      borderRadius: 9999,
-      color: 'black'
+    backgroundColor: "white",
+    marginLeft: 10,
+    marginRight: 10,
+    paddingLeft: 10,
+    borderRadius: 9999,
+    color: 'black'
   }
 })
 
@@ -207,6 +279,10 @@ const UserVoucherListTab = () => {
       <Stack.Screen
         name='Show QR Code'
         component={UserQRCode}
+      />
+      <Stack.Screen
+        name="Transaction History"
+        component={TransactionHistory}
       />
     </Stack.Navigator>
   )
