@@ -5,22 +5,25 @@ import { Camera } from 'expo-camera';
 import QrReader from 'react-qr-reader'
 import { Auth } from 'aws-amplify'
 import { DataStore } from "@aws-amplify/datastore"
-import { StoreProfile } from '../models';
+import { StoreProfile, GiftVoucher, UserVoucher, UserProfile } from '../models';
 
-export default function QRScanner() {
+export default function QRScanner({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [isStore, setIsStore] = useState(false)
 
-  useEffect(async () => {
-    const user = await Auth.currentAuthenticatedUser();
-    const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
-    const storeProfileQuery = await DataStore.query(StoreProfile, c => c.username('eq', username));
-    if (storeProfileQuery.length > 0) {
-      setIsStore(true)
-    } else {
-      setIsStore(false)
+  useEffect(() => {
+    const getProfileType = async () => {
+      const user = await Auth.currentAuthenticatedUser();
+      const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
+      const storeProfileQuery = await DataStore.query(StoreProfile, c => c.username('eq', username));
+      if (storeProfileQuery.length > 0) {
+        setIsStore(true)
+      } else {
+        setIsStore(false)
+      }
     }
+    getProfileType()
   }, [])
 
   useEffect(() => {
@@ -31,12 +34,31 @@ export default function QRScanner() {
   }, []);
   
 
-  const handleBarCodeScanned = (data) => {
+  const handleBarCodeScanned = async (data) => {
     if (!data) return
     if (isStore) {
       alert(`Bar code with data ${data} has been scanned!`)
     } else {
-      alert(`You have claimed gift voucher ${data}`)
+      const giftVouchers = await DataStore.query(GiftVoucher, v => v.id('eq', data))
+      if (giftVouchers.length > 0) {
+        try {
+          const moneyToAdd = giftVouchers[0].money
+          const user = await Auth.currentAuthenticatedUser();
+          const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
+          const users = await DataStore.query(UserProfile, c => c.username('eq', username))
+          const originalUserProfile = users[0]
+          await DataStore.save(
+            UserProfile.copyOf(originalUserProfile, updated => {
+              updated.money = originalUserProfile.money + moneyToAdd
+            })
+          )
+          alert(`You have claimed a gift voucher of $${(Math.round(moneyToAdd / 100 * 100) / 100).toFixed(2)}`)
+          navigation.navigate('UserVoucherListTab')
+        } catch (error) {
+          console.error(error)
+          alert('An error occured, please try again')
+        }
+      }
     }
   };
 
@@ -55,7 +77,7 @@ export default function QRScanner() {
       {
         Platform.OS === 'web' ? (
           <QrReader
-            delay={10}
+            delay={100}
             onError={handleBarCodeError}
             onScan={handleBarCodeScanned}
             style={{ display: 'flex', alignSelf: 'center', width: 'min(100vw, 100vh)', height: 'min(100vw, 100vh)' }}

@@ -14,7 +14,7 @@ import StoreVouchers from './src/components/StoreVouchers'
 import { NavigationContainer } from '@react-navigation/native';
 import { getHeaderTitle } from '@react-navigation/elements';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { StoreProfile } from './src/models';
+import { GiftVoucher, StoreProfile } from './src/models';
 
 import { withAuthenticator, AmplifyTheme, SignIn, SignUp, ForgotPassword, ConfirmSignUp } from 'aws-amplify-react-native'
 
@@ -37,15 +37,18 @@ const App = () => {
   const [todos, setTodos] = useState([])
   const [isStore, setIsStore] = useState(false)
 
-  useEffect(async () => {
-    const user = await Auth.currentAuthenticatedUser();
-    const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
-    const storeProfileQuery = await DataStore.query(StoreProfile, c => c.username('eq', username));
-    if (storeProfileQuery.length > 0) {
-      setIsStore(true)
-    } else {
-      setIsStore(false)
+  useEffect(() => {
+    const getProfileType = async () => {
+      const user = await Auth.currentAuthenticatedUser();
+      const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
+      const storeProfileQuery = await DataStore.query(StoreProfile, c => c.username('eq', username));
+      if (storeProfileQuery.length > 0) {
+        setIsStore(true)
+      } else {
+        setIsStore(false)
+      }
     }
+    getProfileType()
   }, [])
 
   const setInput = (key, value) => {
