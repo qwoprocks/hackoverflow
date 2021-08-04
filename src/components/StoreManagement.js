@@ -248,9 +248,8 @@ const storeStyles = StyleSheet.create({
 })
 
 function Store(props) {
-
     return <View style={storeStyles.container}>
-        <Header title="" />
+        <Header title="" isStore={true} />
         <StoreStats {...props} />
         <StatusBar barStyle='dark-content' />
         <StoreHeader update={props.update} openCreatePage={props.openCreatePage} />
@@ -266,24 +265,33 @@ const statsStyle = StyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: "transparent",
-        height: 240,
+        height: 220,
     },
     profile: {
         flex: 2,
         alignItems: 'center',
         justifyContent: 'center'
     },
-    avatar: {
+    avatarHolder: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: 90,
         width: 90,
         borderRadius: 100,
         borderColor: 'black',
         borderWidth: 2,
+    },
+    avatar: {
+        height: 75,
+        width: 75,
+        resizeMode: 'contain',
 
     },
     shopName: {
         fontSize: 32,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        marginTop: 5,
     },
     username: {
         fontSize: 18,
@@ -304,17 +312,19 @@ function StoreStats({ profile, userVouchers, storeVouchers }) {
 
     return <View style={statsStyle.container}>
         <View style={statsStyle.profile}>
-            <Image
-                style={statsStyle.avatar}
-                source={{
-                    uri: image
-                }} />
+            <View style={statsStyle.avatarHolder}>
+                <Image
+                    style={statsStyle.avatar}
+                    source={{
+                        uri: image
+                    }} />
+            </View>
             <Text style={statsStyle.shopName}>{profile.shopname}</Text>
             <Text style={statsStyle.username}>@{profile.username}</Text>
         </View>
         <View style={statsStyle.statsRow}>
             <Stat value={`$${(moneyEarned / 100).toFixed(2)}`} desc="Revenue" />
-            <Stat value={vouchers} desc="Vouchers" />
+            <Stat value={vouchers} desc={vouchers === 1 ? "Voucher" : "Vouchers"} />
         </View>
     </View>
 }
@@ -343,19 +353,19 @@ function Stat({ desc, value }) {
 function StoreHeader({ openCreatePage }) {
 
 
-    return <View style={voucherStyles.headingRow}>
-        <Text style={voucherStyles.heading}>Vouchers</Text>
-        <View style={{ flex: 1 }} />
-        <TouchableOpacity style={voucherStyles.addButton} onPress={openCreatePage}>
-            <Text style={voucherStyles.addButtonText}>CREATE</Text>
-            <MaterialCommunityIcons
-                name='plus-thick'
-                size={20}
-                color="white"
-            />
-        </TouchableOpacity>
-    </View>
-
+    return (
+        <View style={voucherStyles.headingRow}>
+            <View style={{display: 'flex', paddingHorizontal: 25, visibility: 'hidden' }} />
+            <Text style={voucherStyles.heading}>Vouchers</Text>
+            <TouchableOpacity style={voucherStyles.addButton} onPress={openCreatePage}>
+                <MaterialCommunityIcons
+                    name='plus-thick'
+                    size={20}
+                    color="white"
+                />
+            </TouchableOpacity>
+        </View>
+    )
 }
 
 function StoreVoucherList({ vouchers, update }) {
@@ -430,36 +440,31 @@ const voucherStyles = StyleSheet.create({
     headingRow: {
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 14,
-        marginHorizontal: 16,
+        justifyContent: 'space-between',
+        marginTop: 10,
+        marginBottom: 15,
+        marginHorizontal: 20,
     },
     heading: {
+        display: 'flex',
         fontSize: 24,
         fontWeight: 'bold',
-
     },
     addButton: {
-        flexDirection: 'row',
+        display: 'flex',
         backgroundColor: '#003B70',
-        borderRadius: 20,
-        paddingHorizontal: 20,
+        borderRadius: 10,
+        paddingHorizontal: 15,
         height: 30,
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    addButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 16,
-        marginRight: 8
     },
     voucher: {
         backgroundColor: 'white',
         borderRadius: 8,
         padding: 20,
         marginVertical: 4,
-        marginHorizontal: 16,
+        marginHorizontal: 20,
     },
     shadowProp: {
         shadowColor: '#000',
@@ -474,6 +479,7 @@ const voucherStyles = StyleSheet.create({
     logo: {
         width: 75,
         height: 75,
+        resizeMode: 'contain',
     },
     content: {
         marginLeft: 20,

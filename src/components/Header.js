@@ -23,7 +23,7 @@ export default function Header(props) {
                 {props.title}
             </Text>
             <View style={{flexDirection: 'row', marginLeft: 'auto'}}>
-                <WalletButton showWallet={props.showWallet} handleWallet={props.handleWallet} />
+                {!props.isStore && <WalletButton showWallet={props.showWallet} handleWallet={props.handleWallet} />}
                 <LogoutButton />
             </View>
         </View>

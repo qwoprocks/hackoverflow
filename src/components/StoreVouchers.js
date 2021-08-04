@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 
 import { DataStore } from "@aws-amplify/datastore"
-import { StoreVoucher, UserVoucher, UserProfile } from "../models"
+import { StoreVoucher, UserVoucher, UserProfile, StoreProfile } from "../models"
 import { FlatList, StyleSheet, SafeAreaView, StatusBar, Text, Image, View, TouchableOpacity, Modal } from "react-native"
 import { SearchBar } from "react-native-elements"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -9,12 +9,47 @@ import { Auth } from 'aws-amplify'
 import Loading from "./Loading"
 import Header from "./Header"
 import AccountBalance from "./AccountBalance";
+import { useIsFocused } from "@react-navigation/native";
 
 
-export default function StoreVouchers({ navigation }) {
+export default function StoreVouchers(props) {
 
     const [isLoading, setIsLoading] = useState(true);
     const [storeVouchers, setStoreVouchers] = useState([]);
+    const [isStore, setIsStore] = useState(false)
+    const [accountBalance, setAccountBalance] = useState(0)
+    const isFocused = useIsFocused();
+
+    async function getAccountBalance() {
+        const user = await Auth.currentAuthenticatedUser();
+        const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
+        const userProfileQuery = await DataStore.query(UserProfile, 
+            c => c.username('eq', username));
+        const userProfile = userProfileQuery[0];
+        const userMoney = userProfile.money;
+        setAccountBalance(userMoney);
+    }
+
+    useEffect(() => {
+        if (isFocused) {
+            getAccountBalance()
+        }
+    }, [isFocused]);
+
+    useEffect(() => {
+      const getProfile = async () => {
+        const user = await Auth.currentAuthenticatedUser();
+        const username = user.username.toLowerCase();
+        const storeProfileQuery = await DataStore.query(StoreProfile, c => c.username('eq', username))
+        console.log(storeProfileQuery)
+        if (storeProfileQuery.length > 0) {
+          setIsStore(true)
+        } else {
+          setIsStore(false)
+        }
+      }
+      getProfile()
+    }, [])
 
     useEffect(() => {
         getAllStoreVouchers()
@@ -29,7 +64,13 @@ export default function StoreVouchers({ navigation }) {
     return <>
         {isLoading
             ? <Loading />
-            : <StoreVoucherList storeVouchers={storeVouchers} navigation={navigation} />}
+            : <StoreVoucherList 
+              storeVouchers={storeVouchers} 
+              navigation={props.navigation} 
+              isStore={isStore}
+              accountBalance={accountBalance}
+              handleBalance={setAccountBalance}
+              />}
     </>
 
 
@@ -55,22 +96,7 @@ const searchBarStyles = StyleSheet.create({
 function StoreVoucherList(props) {
     const { storeVouchers } = props;
     const [filter, setFilter] = useState("")
-    const [accountBalance, setAccountBalance] = useState(0)
     const [showWallet, setShowWallet] = useState(false)
-
-    async function getAccountBalance() {
-        const user = await Auth.currentAuthenticatedUser();
-        const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
-        const userProfileQuery = await DataStore.query(UserProfile, 
-            c => c.username('eq', username));
-        const userProfile = userProfileQuery[0];
-        const userMoney = userProfile.money;
-        setAccountBalance(userMoney);
-    }
-
-    useEffect(() => {
-        getAccountBalance()
-    }, []);
 
     const filteredStoreVouchers = storeVouchers
         .filter(voucher => {
@@ -85,19 +111,20 @@ function StoreVoucherList(props) {
             <VoucherCard 
                 voucher={item} 
                 navigation={props.navigation}
-                accountBalance={accountBalance}
-                handleBalance={setAccountBalance}
+                accountBalance={props.accountBalance}
+                handleBalance={props.handleBalance}
+                isStore={props.isStore}
             />
         )
     }
 
     return (
         <View style={voucherStyles.containerWithHeader}>
-            <Header title="Store Vouchers" showWallet={showWallet} handleWallet={setShowWallet} />
-            <AccountBalance
-                accountBalance={accountBalance}
+            <Header title="Store Vouchers" showWallet={showWallet} handleWallet={setShowWallet} isStore={props.isStore} />
+            {!props.isStore && <AccountBalance
+                accountBalance={props.accountBalance}
                 showWallet={showWallet}
-            />
+            />}
             <SearchBar
                 value={filter}
                 onChangeText={setFilter}
@@ -246,17 +273,19 @@ function VoucherCard(props) {
             </Text>
         </View>
         <View style={{ flex: 1 }} />
-        <TouchableOpacity
-            style={voucherStyles.button}
-            onPress={purchaseVoucher}
-            disabled={disabled}
-        >
-            <MaterialCommunityIcons
-                name='cart-arrow-down'
-                color={disabled ? 'darkgray' : '#003B70'}
-                size={50}
-            />
-        </TouchableOpacity>
+        {!props.isStore &&
+            <TouchableOpacity
+                style={voucherStyles.button}
+                onPress={purchaseVoucher}
+                disabled={disabled}
+            >
+                <MaterialCommunityIcons
+                    name='cart-arrow-down'
+                    color={disabled ? 'darkgray' : '#003B70'}
+                    size={50}
+                />
+            </TouchableOpacity>
+        }
         <TransactionCompleted
             modalVisible={modalVisible}
             handleDismiss={setModalVisible}
@@ -300,6 +329,7 @@ const voucherStyles = StyleSheet.create({
     logo: {
         width: 75,
         height: 75,
+        resizeMode: 'contain',
     },
     content: {
         marginLeft: 20,

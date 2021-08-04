@@ -34,7 +34,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 const App = () => {
   const [formState, setFormState] = useState(initialState)
-  const [todos, setTodos] = useState([])
   const [isStore, setIsStore] = useState(false)
 
   useEffect(() => {
@@ -59,7 +58,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName={isStore ? 'StoreManagement' : 'UserVoucherListTab'}
+        initialRouteName={isStore ? 'StoreManagement' : 'StoreVouchers'}
         activeColor='#003B70'
         barStyle={styles.bar}
         shifting={true}
