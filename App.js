@@ -14,6 +14,7 @@ import { DataStore } from "@aws-amplify/datastore"
 
 import { withAuthenticator, AmplifyTheme, SignIn, SignUp, ForgotPassword, ConfirmSignUp } from 'aws-amplify-react-native'
 
+import StoreManagement from './src/components/StoreManagement';
 import config from './src/aws-exports'
 import { GiftVoucher, StoreProfile } from './src/models';
 import QRScanner from './src/components/QRScanner'

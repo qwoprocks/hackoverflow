@@ -4,12 +4,12 @@ import { DataStore } from "@aws-amplify/datastore"
 import { StoreVoucher, UserVoucher, UserProfile, StoreProfile } from "../models"
 import { FlatList, StyleSheet, SafeAreaView, StatusBar, Text, Image, View, TouchableOpacity, Modal } from "react-native"
 import { SearchBar } from "react-native-elements"
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Auth } from 'aws-amplify'
 import Loading from "./Loading"
 import Header from "./Header"
 import AccountBalance from "./AccountBalance";
 import { useIsFocused } from "@react-navigation/native";
+import Dialog from "react-native-dialog";
 
 
 export default function StoreVouchers(props) {
@@ -145,6 +145,35 @@ function StoreVoucherList(props) {
     );
 }
 
+function ConfirmationDialog(props) {
+    const [purchase, setPurchase] = useState(false)
+
+    return(
+        <Dialog.Container 
+            visible={props.visible} 
+            onHide={() => {
+                if (purchase) {
+                    props.handlePurchase()
+                    setPurchase(false)
+                }
+            }}
+        >
+            <Dialog.Title>{props.shop + ' ' + props.title}</Dialog.Title>
+            <Dialog.Description>
+              Do you want to purchase this item? You will be charged ${(props.price / 100).toFixed(2)}.
+            </Dialog.Description>
+            <Dialog.Button label="Cancel" onPress={() => {props.setShowDialog(false)}} />
+            <Dialog.Button 
+                label="Purchase" 
+                onPress={() => {
+                    setPurchase(true)
+                    props.setShowDialog(false)
+                }} 
+            />
+        </Dialog.Container>
+    );
+}
+
 function TransactionCompleted(props) {
     return (
         <Modal
@@ -214,6 +243,7 @@ function VoucherCard(props) {
     const [modalVisible, setModalVisible] = useState(false);
     const [initialBalance, setInitialBalance] = useState(0);
     const [disabled, setDisabled] = useState(false);
+    const [showDialog, setShowDialog] = useState(false);
     const { voucher } = props;
 
     useEffect(() => {
@@ -276,16 +306,31 @@ function VoucherCard(props) {
         {!props.isStore &&
             <TouchableOpacity
                 style={voucherStyles.button}
-                onPress={purchaseVoucher}
+                onPress={() => {setShowDialog(true)}}
                 disabled={disabled}
             >
-                <MaterialCommunityIcons
-                    name='cart-arrow-down'
-                    color={disabled ? 'darkgray' : '#003B70'}
-                    size={50}
+                <Image 
+                    style={{
+                        width: 50, 
+                        height: 50,
+                    }}
+                    source={
+                        disabled
+                        ? require('../../assets/top-up.png')
+                        : require('../../assets/buy.png')
+                    }
                 />
+                
             </TouchableOpacity>
         }
+        <ConfirmationDialog 
+            visible={showDialog} 
+            setShowDialog={setShowDialog} 
+            handlePurchase={purchaseVoucher}
+            price={voucher.price}
+            shop={voucher.shop}
+            title={voucher.title}
+        />
         <TransactionCompleted
             modalVisible={modalVisible}
             handleDismiss={setModalVisible}
