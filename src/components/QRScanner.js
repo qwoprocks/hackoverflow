@@ -6,11 +6,13 @@ import QrReader from 'react-qr-reader'
 import { Auth } from 'aws-amplify'
 import { DataStore } from "@aws-amplify/datastore"
 import { StoreProfile, GiftVoucher, UserVoucher, UserProfile } from '../models';
+import { useIsFocused } from "@react-navigation/native";
 
 export default function QRScanner({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [isStore, setIsStore] = useState(false)
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     (async () => {
@@ -90,14 +92,14 @@ export default function QRScanner({ navigation }) {
     <View style={styles.container}>
       {
         Platform.OS === 'web' ? (
-          <QrReader
+          isFocused && <QrReader
             delay={100}
             onError={handleBarCodeError}
             onScan={handleBarCodeScanned}
             style={{ display: 'flex', alignSelf: 'center', width: 'min(100vw, 100vh)', height: 'min(100vw, 100vh)' }}
           />
         ) : (  
-          <Camera
+          isFocused && <Camera
             style={styles.camera}
             type={type}
             onBarCodeScanned={(res) => handleBarCodeScanned(res.data)}
