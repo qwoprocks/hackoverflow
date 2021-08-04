@@ -410,7 +410,7 @@ function VoucherCard(props) {
                 {voucher.title}
             </Text>
             <Text style={voucherStyles.price}>
-                ${(voucher.price / 100).toFixed(2)} ({voucher.daysvalid}D)
+                ${(voucher.price / 100).toFixed(2)} Valid for {voucher.daysvalid} days
             </Text>
             <Text style={voucherStyles.expiry}>
                 Expires: {new Date(voucher.expiry).toLocaleDateString()}
@@ -495,6 +495,7 @@ const voucherStyles = StyleSheet.create({
     },
     price: {
         marginTop: 8,
+        marginBottom: 4,
         color: 'gray',
         fontSize: 14,
     },

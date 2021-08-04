@@ -299,7 +299,7 @@ function VoucherCard(props) {
                 {voucher.title}
             </Text>
             <Text style={voucherStyles.price}>
-                ${(voucher.price / 100).toFixed(2)} ({voucher.daysvalid}D)
+                ${(voucher.price / 100).toFixed(2)} Valid for {voucher.daysvalid} days
             </Text>
         </View>
         <View style={{ flex: 1 }} />
