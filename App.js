@@ -286,7 +286,7 @@ class MyConfirmSignUp extends AuthPiece<
 
 function LoginHeader() {
   return(
-    <View style={{height: 160, marginTop: 40}}>
+    <View style={{height: 180, marginTop: 80}}>
       <Image 
         source={require('./assets/qr-code-scan.png')} 
         style={{width: 100, height: 100, alignSelf: 'center'}}
