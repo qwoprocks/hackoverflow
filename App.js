@@ -38,7 +38,7 @@ const App = () => {
   const [isStore, setIsStore] = useState(false)
 
   useEffect(() => {
-    const getProfileType = async () => {
+    (async () => {
       const user = await Auth.currentAuthenticatedUser();
       const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
       const storeProfileQuery = await DataStore.query(StoreProfile, c => c.username('eq', username));
@@ -47,8 +47,7 @@ const App = () => {
       } else {
         setIsStore(false)
       }
-    }
-    getProfileType()
+    })();
   }, [])
 
   const setInput = (key, value) => {
