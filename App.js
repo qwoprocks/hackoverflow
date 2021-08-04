@@ -57,9 +57,9 @@ const App = () => {
             tabBarIcon: ({ focused, color }) => (
               <MaterialCommunityIcons
                 name={
-                  focused 
-                  ? 'ticket-confirmation'
-                  : 'ticket-confirmation-outline'
+                  focused
+                    ? 'ticket-confirmation'
+                    : 'ticket-confirmation-outline'
                 }
                 color={color}
                 size={26}
@@ -89,8 +89,26 @@ const App = () => {
               <MaterialCommunityIcons
                 name={
                   focused
-                  ? 'store'
-                  : 'store-outline'
+                    ? 'store'
+                    : 'store-outline'
+                }
+                color={color}
+                size={26}
+              />
+            )
+          }}
+        />
+        <Tab.Screen
+          name="StoreManagement"
+          component={StoreManagement}
+          options={{
+            title: 'Manage',
+            tabBarIcon: ({ focused, color }) => (
+              <MaterialCommunityIcons
+                name={
+                  focused
+                    ? 'store'
+                    : 'store-outline'
                 }
                 color={color}
                 size={26}
@@ -127,14 +145,14 @@ const MyButton = Object.assign({}, AmplifyTheme.button, {
   alignItems: 'center',
   padding: 16,
   backgroundColor: '#003B70',
-  borderRadius: 8 
+  borderRadius: 8
 });
-const MyButtonDisabled = Object.assign({}, AmplifyTheme.buttonDisabled, { 
+const MyButtonDisabled = Object.assign({}, AmplifyTheme.buttonDisabled, {
   alignItems: 'center',
   padding: 16,
   backgroundColor: '#496075',
 });
-const MySectionFooterLink = Object.assign({}, AmplifyTheme.sectionFooterLink, { 
+const MySectionFooterLink = Object.assign({}, AmplifyTheme.sectionFooterLink, {
   flex: 1,
   flexDirection: 'column',
   alignItems: 'center',
@@ -143,7 +161,7 @@ const MySectionFooterLink = Object.assign({}, AmplifyTheme.sectionFooterLink, {
   width: '80%',
   backgroundColor: '#FFF',
 });
-const Section = Object.assign({}, AmplifyTheme.section, { 
+const Section = Object.assign({}, AmplifyTheme.section, {
   flex: 1,
   width: '90%',
   justifyContent: 'space-between',
@@ -151,55 +169,57 @@ const Section = Object.assign({}, AmplifyTheme.section, {
 });
 const MyTheme = Object.assign({}, AmplifyTheme, {
   section: Section,
-  button: MyButton, 
-  buttonDisabled: MyButtonDisabled, 
-  sectionFooterLink: MySectionFooterLink 
+  button: MyButton,
+  buttonDisabled: MyButtonDisabled,
+  sectionFooterLink: MySectionFooterLink
 });
 
 import { UserProfile } from './src/models'
 import { I18n, Logger } from 'aws-amplify';
-import { AuthPiece, IAuthPieceProps, IAuthPieceState,
-	FormField,
-	LinkCell,
-	Header,
-	ErrorRow,
-	AmplifyButton,
-	SignedOutMessage,
-	Wrapper
+import {
+  AuthPiece, IAuthPieceProps, IAuthPieceState,
+  FormField,
+  LinkCell,
+  Header,
+  ErrorRow,
+  AmplifyButton,
+  SignedOutMessage,
+  Wrapper
 } from 'aws-amplify-react-native';
+import StoreManagement from './src/components/StoreManagement';
 
 const logger = new Logger('ConfirmSignUp');
 
-interface IConfirmSignUpProps extends IAuthPieceProps {}
+interface IConfirmSignUpProps extends IAuthPieceProps { }
 
 interface IConfirmSignUpState extends IAuthPieceState {
-	code: string | null;
+  code: string | null;
 }
 
 class MyConfirmSignUp extends AuthPiece<
-	IConfirmSignUpProps,
-	IConfirmSignUpState
+  IConfirmSignUpProps,
+  IConfirmSignUpState
 > {
-	constructor(props: IConfirmSignUpProps) {
-		super(props);
+  constructor(props: IConfirmSignUpProps) {
+    super(props);
 
-		this._validAuthStates = ['confirmSignUp'];
-		this.state = {
-			username: null,
-			code: null,
-			error: null,
-		};
+    this._validAuthStates = ['confirmSignUp'];
+    this.state = {
+      username: null,
+      code: null,
+      error: null,
+    };
 
-		this.confirm = this.confirm.bind(this);
-		this.resend = this.resend.bind(this);
-	}
+    this.confirm = this.confirm.bind(this);
+    this.resend = this.resend.bind(this);
+  }
 
-	confirm() {
-		const { code } = this.state;
-		const username = this.getUsernameFromInput();
-		logger.debug('Confirm Sign Up for ' + username);
-		Auth.confirmSignUp(username, code)
-			.then(async (data) => {
+  confirm() {
+    const { code } = this.state;
+    const username = this.getUsernameFromInput();
+    logger.debug('Confirm Sign Up for ' + username);
+    Auth.confirmSignUp(username, code)
+      .then(async (data) => {
         this.changeState('signedUp')
         try {
           const userData = await DataStore.save(
@@ -214,85 +234,85 @@ class MyConfirmSignUp extends AuthPiece<
           console.error(error)
         }
       })
-			.catch(err => this.error(err));
-	}
+      .catch(err => this.error(err));
+  }
 
-	resend() {
-		const username = this.getUsernameFromInput();
-		logger.debug('Resend Sign Up for ' + username);
-		Auth.resendSignUp(username)
-			.then(() => logger.debug('code sent'))
-			.catch(err => this.error(err));
-	}
+  resend() {
+    const username = this.getUsernameFromInput();
+    logger.debug('Resend Sign Up for ' + username);
+    Auth.resendSignUp(username)
+      .then(() => logger.debug('code sent'))
+      .catch(err => this.error(err));
+  }
 
-	static getDerivedStateFromProps(props, state) {
-		const username = props.authData;
+  static getDerivedStateFromProps(props, state) {
+    const username = props.authData;
 
-		if (username && !state.username) {
-			return { [props.usernameAttributes]: username };
-		}
+    if (username && !state.username) {
+      return { [props.usernameAttributes]: username };
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	showComponent(theme) {
-		const username = this.getUsernameFromInput();
-		return (
-			<Wrapper>
-				<View style={theme.section}>
-					<View>
-						<Header theme={theme}>
-							{I18n.get('Confirm Sign Up')}
-						</Header>
-						<View style={theme.sectionBody}>
-							{this.renderUsernameField(theme)}
-							<FormField
-								theme={theme}
-								onChangeText={text => this.setState({ code: text })}
-								label={I18n.get('Confirmation Code')}
-								placeholder={I18n.get('Enter your confirmation code')}
-								required={true}
-							/>
-							<AmplifyButton
-								theme={theme}
-								text={I18n.get('Confirm')}
-								onPress={this.confirm}
-								disabled={!username || !this.state.code}
-							/>
-						</View>
-						<View style={theme.sectionFooter}>
-							<LinkCell
-								theme={theme}
-								onPress={this.resend}
-								disabled={!this.state.username}
-							>
-								{I18n.get('Resend code')}
-							</LinkCell>
-							<LinkCell
-								theme={theme}
-								onPress={() => this.changeState('signIn')}
-							>
-								{I18n.get('Back to Sign In')}
-							</LinkCell>
-						</View>
-						<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
-					</View>
-					<SignedOutMessage {...this.props} />
-				</View>
-			</Wrapper>
-		);
-	}
+  showComponent(theme) {
+    const username = this.getUsernameFromInput();
+    return (
+      <Wrapper>
+        <View style={theme.section}>
+          <View>
+            <Header theme={theme}>
+              {I18n.get('Confirm Sign Up')}
+            </Header>
+            <View style={theme.sectionBody}>
+              {this.renderUsernameField(theme)}
+              <FormField
+                theme={theme}
+                onChangeText={text => this.setState({ code: text })}
+                label={I18n.get('Confirmation Code')}
+                placeholder={I18n.get('Enter your confirmation code')}
+                required={true}
+              />
+              <AmplifyButton
+                theme={theme}
+                text={I18n.get('Confirm')}
+                onPress={this.confirm}
+                disabled={!username || !this.state.code}
+              />
+            </View>
+            <View style={theme.sectionFooter}>
+              <LinkCell
+                theme={theme}
+                onPress={this.resend}
+                disabled={!this.state.username}
+              >
+                {I18n.get('Resend code')}
+              </LinkCell>
+              <LinkCell
+                theme={theme}
+                onPress={() => this.changeState('signIn')}
+              >
+                {I18n.get('Back to Sign In')}
+              </LinkCell>
+            </View>
+            <ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+          </View>
+          <SignedOutMessage {...this.props} />
+        </View>
+      </Wrapper>
+    );
+  }
 }
 
 function LoginHeader() {
-  return(
-    <View style={{height: 180, marginTop: 80}}>
-      <Image 
-        source={require('./assets/qr-code-scan.png')} 
-        style={{width: 100, height: 100, alignSelf: 'center'}}
+  return (
+    <View style={{ height: 180, marginTop: 80 }}>
+      <Image
+        source={require('./assets/qr-code-scan.png')}
+        style={{ width: 100, height: 100, alignSelf: 'center' }}
       />
       <Text
-        style={{textAlign: 'center', marginTop: 20, fontSize: 24, fontWeight: '600'}}
+        style={{ textAlign: 'center', marginTop: 20, fontSize: 24, fontWeight: '600' }}
       >
         QRPay
       </Text>
@@ -308,9 +328,9 @@ export default withAuthenticator(App, {
     <SignIn />,
     <SignUp signUpConfig={{
       hiddenDefaults: ['phone_number'],
-      signUpFields: [{name: 'preferred_username', key: 'preferred_username', label: 'Display Name (Optional)', required: false} ]
-    }}/>,
-    <ForgotPassword/>,
-    <MyConfirmSignUp/>
+      signUpFields: [{ name: 'preferred_username', key: 'preferred_username', label: 'Display Name (Optional)', required: false }]
+    }} />,
+    <ForgotPassword />,
+    <MyConfirmSignUp />
   ]
 })

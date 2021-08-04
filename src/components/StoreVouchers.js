@@ -3,11 +3,11 @@ import React, { useState, useEffect } from "react"
 import { DataStore } from "@aws-amplify/datastore"
 import { StoreVoucher, UserVoucher, UserProfile } from "../models"
 import { FlatList, StyleSheet, SafeAreaView, StatusBar, Text, Image, View, TouchableOpacity, Modal } from "react-native"
-import { ActivityIndicator } from "react-native-paper"
 import { SearchBar } from "react-native-elements"
-import LogoutButton from './LogoutButton'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Auth } from 'aws-amplify'
+import Loading from "./Loading"
+import Header from "./Header"
 
 
 export default function StoreVouchers({ navigation }) {
@@ -32,38 +32,6 @@ export default function StoreVouchers({ navigation }) {
     </>
 
 
-}
-
-const headerStyles = StyleSheet.create({
-    header: {
-        flexDirection: 'row',
-        marginTop: 40,
-        marginBottom: 10,
-        marginLeft: 20,
-    },
-    headerText: {
-        fontSize: 24,
-        fontWeight: '600',
-    },
-})
-
-function Header() {
-    return(
-      <View style={headerStyles.header}>
-        <Text style={headerStyles.headerText}>
-          Store Vouchers
-        </Text>
-        <LogoutButton />
-      </View>
-    );
-  }
-
-function Loading() {
-    return (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <ActivityIndicator size="large" color="#003B70" />
-        </View>
-    );
 }
 
 const searchBarStyles = StyleSheet.create({
@@ -101,7 +69,7 @@ function StoreVoucherList(props) {
 
     return (
         <View style={voucherStyles.containerWithHeader}>
-            <Header />
+            <Header title="Store Vouchers" />
             <SearchBar
                 value={filter}
                 onChangeText={setFilter}
@@ -123,43 +91,43 @@ function StoreVoucherList(props) {
 }
 
 function TransactionCompleted(props) {
-    return(
+    return (
         <Modal
             animationType='fade'
             visible={props.modalVisible}
         >
             <View style={voucherStyles.modalView}>
                 <Text style={voucherStyles.modalHeader}>
-                   Transaction Complete 
+                    Transaction Complete
                 </Text>
-                <Image 
+                <Image
                     style={voucherStyles.modalLogo}
                     source={require('../../assets/handshake.png')}
                 />
-                <Text style={{marginBottom: 40}}>
+                <Text style={{ marginBottom: 40 }}>
                     Thank you for shopping with {props.shop}
                 </Text>
-                <View style={{flexDirection: 'row', marginBottom: 5}}>
-                    <Text style={{flex: 1, textAlign: 'right', fontWeight: '600'}}>
+                <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                    <Text style={{ flex: 1, textAlign: 'right', fontWeight: '600' }}>
                         Initial balance:
                     </Text>
-                    <Text style={{flex: 1, textAlign: 'left', paddingLeft: 20}}>
+                    <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 20 }}>
                         ${(props.initialBalance / 100).toFixed(2)}
                     </Text>
                 </View>
-                <View style={{flexDirection: 'row', marginBottom: 5}}>
-                    <Text style={{flex: 1, textAlign: 'right', fontWeight: '600'}}>
+                <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                    <Text style={{ flex: 1, textAlign: 'right', fontWeight: '600' }}>
                         Voucher price:
                     </Text>
-                    <Text style={{flex: 1, textAlign: 'left', paddingLeft: 20}}>
+                    <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 20 }}>
                         -${(props.price / 100).toFixed(2)}
                     </Text>
                 </View>
-                <View style={{flexDirection: 'row', marginBottom: 40}}>
-                    <Text style={{flex: 1, textAlign: 'right', fontWeight: '600'}}>
+                <View style={{ flexDirection: 'row', marginBottom: 40 }}>
+                    <Text style={{ flex: 1, textAlign: 'right', fontWeight: '600' }}>
                         Current balance:
                     </Text>
-                    <Text style={{flex: 1, textAlign: 'left', paddingLeft: 20}}>
+                    <Text style={{ flex: 1, textAlign: 'left', paddingLeft: 20 }}>
                         ${(props.currentBalance / 100).toFixed(2)}
                     </Text>
                 </View>
@@ -196,7 +164,7 @@ function VoucherCard(props) {
         try {
             const user = await Auth.currentAuthenticatedUser();
             const username = user.signInUserSession.accessToken.payload.username;
-            const userProfileQuery = await DataStore.query(UserProfile, 
+            const userProfileQuery = await DataStore.query(UserProfile,
                 c => c.username('eq', username));
             const userProfile = userProfileQuery[0];
             setInitialBalance(userProfile.money)
@@ -241,7 +209,7 @@ function VoucherCard(props) {
             </Text>
         </View>
         <View style={{ flex: 1 }} />
-        <TouchableOpacity 
+        <TouchableOpacity
             style={voucherStyles.button}
             onPress={purchaseVoucher}
         >
@@ -251,8 +219,8 @@ function VoucherCard(props) {
                 size={50}
             />
         </TouchableOpacity>
-        <TransactionCompleted 
-            modalVisible={modalVisible} 
+        <TransactionCompleted
+            modalVisible={modalVisible}
             handleDismiss={setModalVisible}
             shop={voucher.shop}
             price={voucher.price}
