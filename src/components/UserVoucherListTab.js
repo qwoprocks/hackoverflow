@@ -11,6 +11,7 @@ import { DataStore } from "@aws-amplify/datastore"
 import { UserVoucher, UserProfile } from "../models"
 import { useIsFocused } from "@react-navigation/native";
 import { SearchBar } from "react-native-elements"
+import Loading from './Loading'
 
 function UserVouchers({ navigation }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -43,14 +44,6 @@ function UserVouchers({ navigation }) {
         ? <Loading />
         : <UserVoucherList user={user} userVouchers={userVouchers} navigation={navigation} />}
     </>
-  );
-}
-
-function Loading() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <ActivityIndicator size="large" color="#003B70" />
-    </View>
   );
 }
 

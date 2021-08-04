@@ -151,17 +151,17 @@ const MyButtonDisabled = Object.assign({}, AmplifyTheme.buttonDisabled, {
   backgroundColor: '#496075',
 });
 const MySectionFooterLink = Object.assign({}, AmplifyTheme.sectionFooterLink, {
-  flex: 1,
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'space-around',
-  paddingTop: 20,
-  width: '80%',
-  backgroundColor: '#FFF',
+  justifyContent: 'center',
+  padding: 10,
+  color: '#003B70',
+  textAlign: 'center',
 });
 const Section = Object.assign({}, AmplifyTheme.section, {
   flex: 1,
-  width: '90%',
+  width: '100%',
+  paddingHorizontal: '10%',
   justifyContent: 'space-between',
   paddingHorizontal: 20,
 });
