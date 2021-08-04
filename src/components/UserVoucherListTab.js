@@ -1,33 +1,56 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import QRCode from 'react-native-qrcode-generator';
 import { SafeAreaView, View, StatusBar, FlatList, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
+import { ActivityIndicator } from "react-native-paper"
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LogoutButton from './LogoutButton'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
+import { Auth } from 'aws-amplify'
+import { DataStore } from "@aws-amplify/datastore"
+import { UserVoucher, UserProfile } from "../models"
+import { useIsFocused } from "@react-navigation/native";
+import { SearchBar } from "react-native-elements"
 
-const DATA = [
-  {
-    id: 'id_1',
-    timebought: '2021-08-02T17:30:30Z',
-    timeused: null,
-    used: false,
-    title: '50% off',
-    shop: 'McDonalds',
-    image: 'https://1000logos.net/wp-content/uploads/2017/03/McDonalds-logo-800x450.png',
-    daysvalid: 14
-  },
-  {
-    id: 'id_2',
-    timebought: '2021-08-02T17:30:30Z',
-    timeused: null,
-    used: false,
-    title: '$50 off',
-    shop: 'Burger King',
-    image: 'https://1000logos.net/wp-content/uploads/2016/10/Burger-King_Logo.png',
-    daysvalid: 14
+function UserVouchers({ navigation }) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [userVouchers, setUserVouchers] = useState([]); 
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      getAllUserVouchers();
+    }
+  }, [isFocused])
+
+  async function getAllUserVouchers() {
+    const user = await Auth.currentAuthenticatedUser();
+    const username = user.signInUserSession.accessToken.payload.username;
+    const userProfileQuery = await DataStore.query(UserProfile, 
+        c => c.username('eq', username));
+    const userProfile = userProfileQuery[0];
+    const vouchers = await DataStore.query(UserVoucher,
+      c => c.profileID('eq', userProfile.id).used('eq', false));
+    setUserVouchers(vouchers)
+    setIsLoading(false)
   }
-];
+
+  return ( 
+    <>
+      {isLoading
+       ? <Loading />
+       : <UserVoucherList userVouchers={userVouchers} navigation={navigation} />}
+    </>
+  );
+}
+
+function Loading() {
+  return (
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <ActivityIndicator size="large" color="#003B70" />
+    </View>
+  );
+}
 
 function Header() {
   return(
@@ -78,26 +101,48 @@ const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation 
   </View>
 );
 
-function UserVoucherList({ navigation }) {
+function UserVoucherList(props) {
+  const { userVouchers } = props;
+  const [filter, setFilter] = useState('')
+
+  const filteredUserVouchers = userVouchers.filter(
+    voucher => {
+      const filterToLower = filter.toLowerCase()
+
+      return (
+        voucher.Voucher.shop.toLowerCase().includes(filterToLower)
+        || voucher.Voucher.title.toLowerCase().includes(filterToLower)
+      );
+    }
+  )
+
   const renderVoucher = ({ item }) => (
     <Item
-      logo={item.image}
-      shop={item.shop}
-      title={item.title}
+      logo={item.Voucher.image}
+      shop={item.Voucher.shop}
+      title={item.Voucher.title}
       timebought={item.timebought}
-      daysvalid={item.daysvalid}
-      voucherId={item.id}
-      navigation={navigation}
+      daysvalid={item.Voucher.daysvalid}
+      voucherId={item.Voucher.id}
+      navigation={props.navigation}
     />
   );
 
   return (
     <View style={styles.containerWithHeader}>
       <Header />
+      <SearchBar
+        value={filter}
+        onChangeText={setFilter}
+        containerStyle={searchBarStyles.container}
+        inputContainerStyle={searchBarStyles.input}
+        placeholder="Search..."
+        lightTheme
+      />
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle='dark-content' />
         <FlatList
-          data={DATA}
+          data={filteredUserVouchers}
           renderItem={renderVoucher}
           keyExtractor={voucher => voucher.id}
         />
@@ -105,6 +150,23 @@ function UserVoucherList({ navigation }) {
     </View>
   );
 }
+
+const searchBarStyles = StyleSheet.create({
+  container: {
+      flexDirection: "row",
+      backgroundColor: "transparent",
+      borderTopColor: "transparent",
+      borderBottomColor: "transparent",
+  },
+  input: {
+      backgroundColor: "white",
+      marginLeft: 10,
+      marginRight: 10,
+      paddingLeft: 10,
+      borderRadius: 9999,
+      color: 'black'
+  }
+})
 
 function UserQRCode({ route, navigation }) {
   const { voucherId } = route.params;
@@ -137,7 +199,7 @@ const UserVoucherListTab = () => {
     >
       <Stack.Screen
         name='My Vouchers'
-        component={UserVoucherList}
+        component={UserVouchers}
         options={{
           headerShown: false,
         }}

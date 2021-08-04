@@ -4,9 +4,11 @@ import { schema } from './schema';
 
 
 
-const { UserVoucher, StoreVoucher } = initSchema(schema);
+const { StoreProfile, StoreVoucher, UserProfile, UserVoucher } = initSchema(schema);
 
 export {
-  UserVoucher,
-  StoreVoucher
+  StoreProfile,
+  StoreVoucher,
+  UserProfile,
+  UserVoucher
 };
