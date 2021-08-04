@@ -3,12 +3,17 @@ import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, Text, SafeAreaView, StatusBar, Image, FlatList, TouchableOpacity } from "react-native";
 import { StoreVoucher, UserVoucher, StoreProfile } from '../models';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Loading from './Loading';
 import Header from "./Header";
+import { NavigationContainer } from "@react-navigation/native";
+import { TextInput } from "react-native-paper";
 
 const USERNAME = "grab"
 
-export default function StoreManagement() {
+const Stack = createNativeStackNavigator();
+
+export default function StoreManagement({ navigation }) {
     const [isLoading, setIsLoading] = useState(true);
     const [storeProfile, setStoreProfile] = useState();
     const [storeVouchers, setStoreVouchers] = useState([]);
@@ -31,22 +36,151 @@ export default function StoreManagement() {
         setStoreVouchers(storeVouchers)
 
         const userVouchers = (await DataStore.query(UserVoucher))
-            .filter(v => v.Voucher.shop === storeProfile.shopname)
+            .filter(v => v.Voucher && v.Voucher.shop === storeProfile.shopname
+            )
         setUserVouchers(userVouchers)
 
         setIsLoading(false)
     }
 
+    function Profile() {
+        return <Store openCreatePage={() => navigation.navigate("CreateVoucher")} profile={storeProfile} storeVouchers={storeVouchers} userVouchers={userVouchers} update={getAllVouchers} />
+    }
+
+    function Create() {
+        return <CreateVoucher update={getAllVouchers} storeProfile={storeProfile} />
+    }
+
     return <>
         {isLoading
             ? <Loading />
-            : <Store profile={storeProfile} storeVouchers={storeVouchers} userVouchers={userVouchers} />}
+            :
+
+            <Stack.Navigator
+                style={{ flex: 1 }}
+                initialRouteName='Profile'
+                screenOptions={{
+                    headerStyle: {
+                        backgroundColor: '#FFF',
+                    },
+                    headerTitleStyle: {
+                        color: '#000',
+                        fontSize: 18,
+                    },
+                    headerBackTitle: 'Back',
+                    headerTintColor: '#003B70',
+                }}
+            >
+                <Stack.Screen
+                    name='Profile'
+                    component={Profile}
+                    options={{
+                        contentStyle: { flex: 1 },
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name='CreateVoucher'
+                    component={Create}
+                />
+
+            </Stack.Navigator>}
     </>
+}
+
+const createStyles = StyleSheet.create({
+    container: {
+        display: 'flex',
+        marginHorizontal: 20,
+        marginVertical: 20,
+    },
+    label: {
+        fontSize: 20,
+        color: "#003B70",
+    },
+    input: {
+        borderRadius: 20,
+    }
+})
+
+function CreateVoucher({ update, storeProfile }) {
+    const [title, setTitle] = useState("")
+    const [price, setPrice] = useState("")
+    const [daysvalid, setValid] = useState("")
+    const [expiry, setExpiry] = useState("")
+    const [image, setImage] = useState("")
+
+    async function createStoreVoucher() {
+        const mock = new StoreVoucher({
+            "daysvalid": 14,
+            "expiry": "2021-08-14T23:59Z",
+            "image": "https://i.pinimg.com/originals/8c/bf/a8/8cbfa8b08311fccc62a5558f4cc86ffe.png",
+            "price": 900,
+            "shop": "Grab",
+            "storeprofileID": "ca73fab2-bf1d-4583-8c0f-eeaaa5ec7f4d",
+            "title": "$10 Grab Voucher",
+        })
+
+        await DataStore.save(mock)
+
+        await update()
+    }
+
+    function renderPreview() {
+        try {
+
+            const voucher = {
+                title: title || "Your Title Here",
+                price: price ? parseInt(price) : 1000,
+                daysvalid: daysvalid ? parseInt(daysvalid) : 14,
+                image: image || "https://i.stack.imgur.com/y9DpT.jpg",
+                shop: storeProfile.shopname,
+                storeprofileID: storeProfile.id,
+                expiry: expiry ? new Date().setDate(new Date().getDate() + parseInt(expiry)) : new Date().toISOString()
+
+            }
+
+            return <VoucherCard voucher={voucher} />
+        } catch (error) {
+            <Text>Invalid fields</Text>
+        }
+
+    }
+
+    return <View style={createStyles.container}>
+        <Text style={createStyles.label}>Title</Text>
+        <TextInput
+            style={createStyles.input}
+            value={title}
+            onChangeText={setTitle} />
+        <Text style={createStyles.label}>Price (in cents)</Text>
+        <TextInput
+            style={createStyles.input}
+            value={price}
+            onChangeText={setPrice} />
+        <Text style={createStyles.label}>Days valid after purchase</Text>
+        <TextInput
+            style={createStyles.input}
+            value={daysvalid}
+            onChangeText={setValid} />
+        <Text style={createStyles.label}>Days to expiry</Text>
+        <TextInput
+            style={createStyles.input}
+            value={expiry}
+            onChangeText={setExpiry} />
+        <Text style={createStyles.label}>Image URL</Text>
+        <TextInput
+            style={createStyles.input}
+            value={image}
+            onChangeText={setImage} />
+        {renderPreview()}
+    </View>
 }
 
 const storeStyles = StyleSheet.create({
     container: {
         display: 'flex',
+        flex: 1,
         flexDirection: 'column'
     }
 })
@@ -55,9 +189,10 @@ function Store(props) {
 
     return <View style={storeStyles.container}>
         <Header title="" />
-        <SafeAreaView >
-            <StoreStats {...props} />
-            <StatusBar barStyle='dark-content' />
+        <StoreStats {...props} />
+        <StatusBar barStyle='dark-content' />
+        <StoreHeader update={props.update} openCreatePage={props.openCreatePage} />
+        <SafeAreaView style={{ flex: 1 }}>
             <StoreVoucherList vouchers={props.storeVouchers} />
         </SafeAreaView>
     </View>
@@ -82,7 +217,7 @@ const statsStyle = StyleSheet.create({
         borderRadius: 100,
         borderColor: 'black',
         borderWidth: 2,
-        borderStyle: 'solid'
+
     },
     shopName: {
         fontSize: 32,
@@ -143,38 +278,49 @@ function Stat({ desc, value }) {
     </View>
 }
 
-function StoreVoucherList({ vouchers }) {
+function StoreHeader({ openCreatePage }) {
 
+
+    return <View style={voucherStyles.headingRow}>
+        <Text style={voucherStyles.heading}>Vouchers</Text>
+        <View style={{ flex: 1 }} />
+        <TouchableOpacity style={voucherStyles.addButton} onPress={openCreatePage}>
+            <Text style={voucherStyles.addButtonText}>CREATE</Text>
+            <MaterialCommunityIcons
+                name='plus-thick'
+                size={20}
+                color="white"
+            />
+        </TouchableOpacity>
+    </View>
+
+}
+
+function StoreVoucherList({ vouchers, update }) {
+
+    function deleteVoucher(id) {
+        return async () => {
+            await DataStore.delete(StoreVoucher, id)
+            update()
+        }
+    }
     function renderVoucher({ item }) {
-        return <VoucherCard voucher={item} />
+        return <VoucherCard voucher={item} deleteVoucher={deleteVoucher(item.id)} />
     }
 
-    return <View>
-        <View style={voucherStyles.headingRow}>
-            <Text style={voucherStyles.heading}>Vouchers</Text>
-            <View style={{ flex: 1 }} />
-            <TouchableOpacity style={voucherStyles.addButton}>
-                <Text style={voucherStyles.addButtonText}>CREATE</Text>
-                <MaterialCommunityIcons
-                    name='plus-thick'
-                    size={20}
-                    color="white"
-                />
-            </TouchableOpacity>
+    return <FlatList
+        data={vouchers}
+        renderItem={renderVoucher}
+        keyExtractor={(item) => item.id}
+    />
 
-        </View>
 
-        <FlatList
-            data={vouchers}
-            renderItem={renderVoucher}
-            keyExtractor={(item) => item.id}
-        />
-    </View>
 }
 
 
 function VoucherCard(props) {
-    const { voucher } = props;
+    const { voucher, deleteVoucher } = props;
+
     return <View style={[voucherStyles.container, voucherStyles.voucher, voucherStyles.shadowProp]}>
 
         <Image
@@ -199,6 +345,14 @@ function VoucherCard(props) {
             </Text>
         </View>
         <View style={{ flex: 1 }} />
+
+        {deleteVoucher && <TouchableOpacity onPress={deleteVoucher}>
+            <MaterialCommunityIcons
+                name='delete'
+                size={40}
+                color="#003B70"
+            />
+        </TouchableOpacity>}
     </View>
 }
 
@@ -279,6 +433,16 @@ const voucherStyles = StyleSheet.create({
     expiry: {
         color: 'gray',
         fontSize: 14
-    }
+    },
+    button: {
+        marginLeft: 'auto',
+        alignSelf: 'center',
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: 'white',
+        width: 70,
+        height: 70,
+        borderRadius: 10,
+    },
 
 });
