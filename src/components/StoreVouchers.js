@@ -9,8 +9,6 @@ import Loading from "./Loading"
 import Header from "./Header"
 import AccountBalance from "./AccountBalance";
 import { useIsFocused } from "@react-navigation/native";
-import Dialog from "react-native-dialog";
-
 
 export default function StoreVouchers(props) {
 
