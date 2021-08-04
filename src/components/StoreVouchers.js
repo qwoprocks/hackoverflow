@@ -58,7 +58,7 @@ function StoreVoucherList(props) {
 
     async function getAccountBalance() {
         const user = await Auth.currentAuthenticatedUser();
-        const username = user.signInUserSession.accessToken.payload.username;
+        const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
         const userProfileQuery = await DataStore.query(UserProfile, 
             c => c.username('eq', username));
         const userProfile = userProfileQuery[0];
@@ -194,7 +194,7 @@ function VoucherCard(props) {
     async function purchaseVoucher() {
         try {
             const user = await Auth.currentAuthenticatedUser();
-            const username = user.signInUserSession.accessToken.payload.username;
+            const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
             const userProfileQuery = await DataStore.query(UserProfile,
                 c => c.username('eq', username));
             const userProfile = userProfileQuery[0];

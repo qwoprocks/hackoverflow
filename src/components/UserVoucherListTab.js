@@ -28,7 +28,7 @@ function UserVouchers({ navigation }) {
 
   async function getAllUserVouchers() {
     const user = await Auth.currentAuthenticatedUser();
-    const username = user.signInUserSession.accessToken.payload.username;
+    const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
     const userProfileQuery = await DataStore.query(UserProfile,
       c => c.username('eq', username));
     const userProfile = userProfileQuery[0];
