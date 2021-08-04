@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import SvgQRCode from 'react-native-qrcode-svg';
-import { SafeAreaView, View, StatusBar, FlatList, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, StatusBar, FlatList, StyleSheet, Text, Image, TouchableOpacity, Platform } from 'react-native';
 import { ActivityIndicator } from "react-native-paper"
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LogoutButton from './LogoutButton'
@@ -243,21 +243,24 @@ const UserQRCode = ({ route, navigation }) => {
   }, [])
 
   async function getLogo() {
+    if (Platform.OS === 'web') {
+      setBase64('null')
+      return
+    }
     const result = await FileSystem.downloadAsync(
       logo,
       FileSystem.cacheDirectory + "logo.tmp"
     )
     const base64 = await FileSystem.readAsStringAsync(result.uri, { encoding: "base64" })
     setBase64(`data:${result.headers["content-type"]};base64,${base64}`)
-
   }
 
   return base64 ? (
     <View>
       <SvgQRCode
         value={voucherId.voucherId}
-        logo={{ uri: base64 }}
-        logoSize={50}
+        logo={Platform.OS === 'web' ? null : { uri: base64 }}
+        logoSize={Platform.OS === 'web' ? 0 : 50}
         logoBackgroundColor='white'
         size={250}
       />
@@ -290,6 +293,7 @@ const UserVoucherListTab = () => {
         name='My Vouchers'
         component={UserVouchers}
         options={{
+          contentStyle: { flex: 1 },
           headerShown: false,
         }}
       />
