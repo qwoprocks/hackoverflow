@@ -9,7 +9,7 @@ import Loading from "./Loading"
 import Header from "./Header"
 import AccountBalance from "./AccountBalance";
 import { useIsFocused } from "@react-navigation/native";
-import Dialog from "react-native-dialog";
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 
 export default function StoreVouchers(props) {
@@ -148,29 +148,28 @@ function StoreVoucherList(props) {
 function ConfirmationDialog(props) {
     const [purchase, setPurchase] = useState(false)
 
-    return(
-        <Dialog.Container 
-            visible={props.visible} 
-            onHide={() => {
-                if (purchase) {
-                    props.handlePurchase()
-                    setPurchase(false)
-                }
+    return (
+        <AwesomeAlert
+            show={props.visible}
+            showProgress={false}
+            title={props.shop + ' ' + props.title}
+            message={`Do you want to purchase this item? You will be charged $${(props.price / 100).toFixed(2)}.`}
+            closeOnTouchOutside={true}
+            closeOnHardwareBackPress={true}
+            showCancelButton={true}
+            showConfirmButton={true}
+            cancelText="Cancel"
+            confirmText="Purchase"
+            confirmButtonColor="#DD6B55"
+            onCancelPressed={() => {
+                props.setShowDialog(false)
             }}
-        >
-            <Dialog.Title>{props.shop + ' ' + props.title}</Dialog.Title>
-            <Dialog.Description>
-              Do you want to purchase this item? You will be charged ${(props.price / 100).toFixed(2)}.
-            </Dialog.Description>
-            <Dialog.Button label="Cancel" onPress={() => {props.setShowDialog(false)}} />
-            <Dialog.Button 
-                label="Purchase" 
-                onPress={() => {
-                    setPurchase(true)
-                    props.setShowDialog(false)
-                }} 
-            />
-        </Dialog.Container>
+            onConfirmPressed={() => {
+                props.handlePurchase()
+                setPurchase(true)
+                props.setShowDialog(false)
+            }}
+        />
     );
 }
 
