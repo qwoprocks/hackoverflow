@@ -46,7 +46,7 @@ export default function StoreManagement({ navigation }) {
     }
 
     function Profile() {
-        return <Store openCreatePage={() => navigation.navigate("CreateVoucher")} profile={storeProfile} storeVouchers={storeVouchers} userVouchers={userVouchers} update={getAllVouchers} />
+        return <Store openCreatePage={() => navigation.navigate("Create Voucher")} profile={storeProfile} storeVouchers={storeVouchers} userVouchers={userVouchers} update={getAllVouchers} />
     }
 
     function Create(props) {
@@ -82,7 +82,7 @@ export default function StoreManagement({ navigation }) {
                     }}
                 />
                 <Stack.Screen
-                    name='CreateVoucher'
+                    name='Create Voucher'
                     component={Create}
                 />
 
@@ -255,7 +255,7 @@ function Store(props) {
         <StatusBar barStyle='dark-content' />
         <StoreHeader update={props.update} openCreatePage={props.openCreatePage} />
         <SafeAreaView style={{ flex: 1 }}>
-            <StoreVoucherList vouchers={props.storeVouchers} />
+            <StoreVoucherList update={props.update} vouchers={props.storeVouchers} />
         </SafeAreaView>
     </View>
 
