@@ -20,6 +20,15 @@ export default function StoreVouchers(props) {
     const [accountBalance, setAccountBalance] = useState(0)
     const isFocused = useIsFocused();
 
+    const [alertOptions, setAlertOptions] = useState({
+        visible: false,
+        shop: '',
+        title: '',
+        price: 0,
+        handlePurchase: () => undefined,
+        setShowDialog: () => undefined
+    })
+
     async function getAccountBalance() {
         const user = await Auth.currentAuthenticatedUser();
         const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
@@ -64,13 +73,21 @@ export default function StoreVouchers(props) {
     return <>
         {isLoading
             ? <Loading />
-            : <StoreVoucherList 
-              storeVouchers={storeVouchers} 
-              navigation={props.navigation} 
-              isStore={isStore}
-              accountBalance={accountBalance}
-              handleBalance={setAccountBalance}
-              />}
+            :
+            <View>
+                <StoreVoucherList 
+                    storeVouchers={storeVouchers} 
+                    navigation={props.navigation} 
+                    isStore={isStore}
+                    accountBalance={accountBalance}
+                    handleBalance={setAccountBalance}
+                    setAlertOptions={setAlertOptions}
+                />
+                <ConfirmationDialog 
+                    alertOptions={alertOptions}
+                />
+            </View>
+        }
     </>
 
 
@@ -114,6 +131,7 @@ function StoreVoucherList(props) {
                 accountBalance={props.accountBalance}
                 handleBalance={props.handleBalance}
                 isStore={props.isStore}
+                setAlertOptions={props.setAlertOptions}
             />
         )
     }
@@ -146,14 +164,12 @@ function StoreVoucherList(props) {
 }
 
 function ConfirmationDialog(props) {
-    const [purchase, setPurchase] = useState(false)
-
     return (
         <AwesomeAlert
-            show={props.visible}
+            show={props.alertOptions.visible}
             showProgress={false}
-            title={props.shop + ' ' + props.title}
-            message={`Do you want to purchase this item? You will be charged $${(props.price / 100).toFixed(2)}.`}
+            title={props.alertOptions.shop + ' ' + props.alertOptions.title}
+            message={`Do you want to purchase this item? You will be charged $${(props.alertOptions.price / 100).toFixed(2)}.`}
             closeOnTouchOutside={true}
             closeOnHardwareBackPress={true}
             showCancelButton={true}
@@ -161,13 +177,14 @@ function ConfirmationDialog(props) {
             cancelText="Cancel"
             confirmText="Purchase"
             confirmButtonColor="#DD6B55"
+            contentContainerStyle={{ borderWidth: '2px', borderColor: 'black' }}
+            overlayStyle={{ backgroundColor: 'transparent' }}
             onCancelPressed={() => {
-                props.setShowDialog(false)
+                props.alertOptions.setShowDialog(false)
             }}
             onConfirmPressed={() => {
-                props.handlePurchase()
-                setPurchase(true)
-                props.setShowDialog(false)
+                props.alertOptions.handlePurchase()
+                props.alertOptions.setShowDialog(false)
             }}
         />
     );
@@ -242,7 +259,6 @@ function VoucherCard(props) {
     const [modalVisible, setModalVisible] = useState(false);
     const [initialBalance, setInitialBalance] = useState(0);
     const [disabled, setDisabled] = useState(false);
-    const [showDialog, setShowDialog] = useState(false);
     const { voucher } = props;
 
     useEffect(() => {
@@ -305,7 +321,24 @@ function VoucherCard(props) {
         {!props.isStore &&
             <TouchableOpacity
                 style={voucherStyles.button}
-                onPress={() => {setShowDialog(true)}}
+                onPress={() => {
+                    props.setAlertOptions({
+                        visible: true,
+                        shop: voucher.shop,
+                        title: voucher.title,
+                        price: voucher.price,
+                        handlePurchase: purchaseVoucher,
+                        setShowDialog: () => {
+                            props.setAlertOptions({
+                                visible:false,
+                                shop: voucher.shop,
+                                title: voucher.title,
+                                price: voucher.price,
+                                handlePurchase: purchaseVoucher,
+                            })
+                        }
+                    })
+                }}
                 disabled={disabled}
             >
                 <Image 
@@ -322,14 +355,6 @@ function VoucherCard(props) {
                 
             </TouchableOpacity>
         }
-        <ConfirmationDialog 
-            visible={showDialog} 
-            setShowDialog={setShowDialog} 
-            handlePurchase={purchaseVoucher}
-            price={voucher.price}
-            shop={voucher.shop}
-            title={voucher.title}
-        />
         <TransactionCompleted
             modalVisible={modalVisible}
             handleDismiss={setModalVisible}
