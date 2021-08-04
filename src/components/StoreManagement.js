@@ -54,7 +54,7 @@ const storeStyles = StyleSheet.create({
 function Store(props) {
 
     return <View style={storeStyles.container}>
-        <Header title="Manage Store" />
+        <Header title="" />
         <SafeAreaView >
             <StoreStats {...props} />
             <StatusBar barStyle='dark-content' />
@@ -68,7 +68,7 @@ const statsStyle = StyleSheet.create({
     container: {
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: "white",
+        backgroundColor: "transparent",
         height: 240,
     },
     profile: {
@@ -77,19 +77,19 @@ const statsStyle = StyleSheet.create({
         justifyContent: 'center'
     },
     avatar: {
-        height: 75,
-        width: 75,
+        height: 90,
+        width: 90,
         borderRadius: 100,
-        borderColor: '#003B70',
+        borderColor: 'black',
         borderWidth: 2,
         borderStyle: 'solid'
     },
     shopName: {
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: 'bold'
     },
     username: {
-
+        fontSize: 18,
     },
     statsRow: {
         flex: 1,
@@ -128,13 +128,11 @@ const singleStatStyle = StyleSheet.create({
         alignItems: 'center'
     },
     value: {
-
         fontWeight: 'bold',
-        fontSize: 18
+        fontSize: 24
     },
     desc: {
-
-        fontSize: 14,
+        fontSize: 18,
     }
 })
 
