@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react'
 import {
-  View, Text, StyleSheet, TextInput, Button
+  View, Text, StyleSheet, TextInput, Button, Image
 } from 'react-native'
 
 import Amplify, { Auth } from 'aws-amplify'
@@ -126,7 +126,8 @@ const styles = StyleSheet.create({
 const MyButton = Object.assign({}, AmplifyTheme.button, {
   alignItems: 'center',
   padding: 16,
-  backgroundColor: '#003B70'
+  backgroundColor: '#003B70',
+  borderRadius: 8 
 });
 const MyButtonDisabled = Object.assign({}, AmplifyTheme.buttonDisabled, { 
   alignItems: 'center',
@@ -134,12 +135,26 @@ const MyButtonDisabled = Object.assign({}, AmplifyTheme.buttonDisabled, {
   backgroundColor: '#496075',
 });
 const MySectionFooterLink = Object.assign({}, AmplifyTheme.sectionFooterLink, { 
-  fontSize: 14,
-  color: '#003B70',
-  alignItems: 'baseline',
-  textAlign: 'center',
+  flex: 1,
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'space-around',
+  paddingTop: 20,
+  width: '80%',
+  backgroundColor: '#FFF',
 });
-const MyTheme = Object.assign({}, AmplifyTheme, { button: MyButton, buttonDisabled: MyButtonDisabled, sectionFooterLink: MySectionFooterLink });
+const Section = Object.assign({}, AmplifyTheme.section, { 
+  flex: 1,
+  width: '90%',
+  justifyContent: 'space-between',
+  paddingHorizontal: 20,
+});
+const MyTheme = Object.assign({}, AmplifyTheme, {
+  section: Section,
+  button: MyButton, 
+  buttonDisabled: MyButtonDisabled, 
+  sectionFooterLink: MySectionFooterLink 
+});
 
 import { UserProfile } from './src/models'
 import { I18n, Logger } from 'aws-amplify';
@@ -269,10 +284,28 @@ class MyConfirmSignUp extends AuthPiece<
 	}
 }
 
+function LoginHeader() {
+  return(
+    <View style={{height: 160, marginTop: 40}}>
+      <Image 
+        source={require('./assets/qr-code-scan.png')} 
+        style={{width: 100, height: 100, alignSelf: 'center'}}
+      />
+      <Text
+        style={{textAlign: 'center', marginTop: 20, fontSize: 24, fontWeight: '600'}}
+      >
+        QRPay
+      </Text>
+    </View>
+  );
+}
+
 export default withAuthenticator(App, {
   theme: MyTheme,
   authenticatorComponents: [
-    <SignIn/>,
+    <StatusBar barStyle='dark-content' />,
+    <LoginHeader />,
+    <SignIn />,
     <SignUp signUpConfig={{
       hiddenDefaults: ['phone_number'],
       signUpFields: [{name: 'preferred_username', key: 'preferred_username', label: 'Display Name (Optional)', required: false} ]
