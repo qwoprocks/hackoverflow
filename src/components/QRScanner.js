@@ -13,7 +13,7 @@ export default function QRScanner({ navigation }) {
   const [isStore, setIsStore] = useState(false)
 
   useEffect(() => {
-    const getProfileType = async () => {
+    (async () => {
       const user = await Auth.currentAuthenticatedUser();
       const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
       const storeProfileQuery = await DataStore.query(StoreProfile, c => c.username('eq', username));
@@ -22,22 +22,37 @@ export default function QRScanner({ navigation }) {
       } else {
         setIsStore(false)
       }
-    }
-    getProfileType()
-  }, [])
-
-  useEffect(() => {
+    })();
     (async () => {
       const { status } = await Camera.requestPermissionsAsync();
       setHasPermission(status === 'granted');
     })();
-  }, []);
+  }, [])
   
 
   const handleBarCodeScanned = async (data) => {
     if (!data) return
     if (isStore) {
       alert(`Bar code with data ${data} has been scanned!`)
+      const userVouchers = await DataStore.query(UserVoucher, v => v.id('eq', data))
+      if (userVouchers.length > 0) {
+        try {
+          const originalUserVoucher = userVouchers[0]
+          if (originalUserVoucher.used) {
+            alert('User voucher has already been used!')
+          } else {
+            await DataStore.save(
+              UserVoucher.copyOf(originalUserVoucher, updated => {
+                updated.used = true
+              })
+            )
+            alert('Voucher has been used successfully')
+          }
+        } catch (error) {
+          console.error(error);
+          alert('An error occurred, please try again')
+        }
+      }
     } else {
       const giftVouchers = await DataStore.query(GiftVoucher, v => v.id('eq', data))
       if (giftVouchers.length > 0) {
