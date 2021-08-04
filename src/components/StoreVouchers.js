@@ -170,7 +170,8 @@ function ConfirmationDialog(props) {
             animatedValue={0}
             useNativeDriver={true}
             title={props.alertOptions.shop + ' ' + props.alertOptions.title}
-            message={`Do you want to purchase this item? You will be charged $${(props.alertOptions.price / 100).toFixed(2)}.`}
+            message={`Do you want to purchase this item? \n You will be charged $${(props.alertOptions.price / 100).toFixed(2)}.`}
+            messageStyle={{textAlign: 'center'}}
             closeOnTouchOutside={true}
             closeOnHardwareBackPress={true}
             showCancelButton={true}
@@ -178,7 +179,7 @@ function ConfirmationDialog(props) {
             cancelText="Cancel"
             confirmText="Purchase"
             confirmButtonColor="#DD6B55"
-            contentContainerStyle={{ borderWidth: '2px', borderColor: 'black' }}
+            contentContainerStyle={{ borderWidth: '1px', borderColor: 'black' }}
             overlayStyle={{ backgroundColor: 'transparent' }}
             onCancelPressed={() => {
                 props.alertOptions.setShowDialog(false)
