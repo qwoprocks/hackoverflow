@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@aws-amplify/datastore": "^3.3.0",
+    "@koale/useworker": "4.0.2",
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/netinfo": "^6.0.0",
     "@react-navigation/material-bottom-tabs": "^6.0.0",
@@ -19,6 +20,7 @@
     "aws-amplify-react-native": "^5.0.3",
     "expo": "~42.0.1",
     "expo-barcode-scanner": "~10.2.2",
+    "expo-camera": "~11.2.2",
     "expo-status-bar": "~1.0.4",
     "moment": "^2.29.1",
     "react": "16.13.1",
@@ -35,10 +37,14 @@
     "react-native-svg": "^12.1.1",
     "react-native-vector-icons": "^8.1.0",
     "react-native-web": "~0.13.12",
-    "react-native-webview": "11.6.2"
+    "react-native-webview": "11.6.2",
+    "react-qr-reader": "^2.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"
+  },
+  "resolutions": {
+    "expo-camera/**/@koale/useworker": "4.0.2"
   },
   "private": true
 }

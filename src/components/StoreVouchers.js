@@ -54,6 +54,21 @@ const searchBarStyles = StyleSheet.create({
 function StoreVoucherList(props) {
     const { storeVouchers } = props;
     const [filter, setFilter] = useState("")
+    const [accountBalance, setAccountBalance] = useState(0)
+
+    async function getAccountBalance() {
+        const user = await Auth.currentAuthenticatedUser();
+        const username = user.signInUserSession.accessToken.payload.username;
+        const userProfileQuery = await DataStore.query(UserProfile, 
+            c => c.username('eq', username));
+        const userProfile = userProfileQuery[0];
+        const userMoney = userProfile.money;
+        setAccountBalance(userMoney);
+    }
+
+    useEffect(() => {
+        getAccountBalance()
+    }, []);
 
     const filteredStoreVouchers = storeVouchers
         .filter(voucher => {
@@ -64,7 +79,14 @@ function StoreVoucherList(props) {
         })
 
     function renderVoucher({ item }) {
-        return <VoucherCard voucher={item} navigation={props.navigation} />
+        return (
+            <VoucherCard 
+                voucher={item} 
+                navigation={props.navigation}
+                accountBalance={accountBalance}
+                handleBalance={setAccountBalance}
+            />
+        )
     }
 
     return (
@@ -158,8 +180,17 @@ function TransactionCompleted(props) {
 function VoucherCard(props) {
     const [modalVisible, setModalVisible] = useState(false);
     const [initialBalance, setInitialBalance] = useState(0);
-    const [currentBalance, setCurrentBalance] = useState(0);
+    const [disabled, setDisabled] = useState(false);
     const { voucher } = props;
+
+    useEffect(() => {
+        if (props.accountBalance < voucher.price) {
+            setDisabled(true)
+        } else {
+            setDisabled(false)
+        }
+    }, [props.accountBalance])
+
     async function purchaseVoucher() {
         try {
             const user = await Auth.currentAuthenticatedUser();
@@ -168,7 +199,7 @@ function VoucherCard(props) {
                 c => c.username('eq', username));
             const userProfile = userProfileQuery[0];
             setInitialBalance(userProfile.money)
-            setCurrentBalance(userProfile.money - voucher.price)
+            props.handleBalance(userProfile.money - voucher.price)
             await DataStore.save(
                 UserProfile.copyOf(userProfile, updated => {
                     updated.money = userProfile.money - voucher.price;
@@ -183,7 +214,7 @@ function VoucherCard(props) {
             setModalVisible(true);
             console.log("saved", result);
         } catch (e) {
-            console.log("Error creating user voucher", e)
+            console.error("Error creating user voucher", e)
         }
 
     }
@@ -212,10 +243,11 @@ function VoucherCard(props) {
         <TouchableOpacity
             style={voucherStyles.button}
             onPress={purchaseVoucher}
+            disabled={disabled}
         >
             <MaterialCommunityIcons
                 name='cart-arrow-down'
-                color='#003B70'
+                color={disabled ? 'darkgray' : '#003B70'}
                 size={50}
             />
         </TouchableOpacity>
@@ -225,7 +257,7 @@ function VoucherCard(props) {
             shop={voucher.shop}
             price={voucher.price}
             initialBalance={initialBalance}
-            currentBalance={currentBalance}
+            currentBalance={props.accountBalance}
             navigation={props.navigation}
         />
     </View>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import QRCode from 'react-native-qrcode-generator';
+import React, { useEffect, useState } from 'react'
+import SvgQRCode from 'react-native-qrcode-svg';
 import { SafeAreaView, View, StatusBar, FlatList, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 import { ActivityIndicator } from "react-native-paper"
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -240,11 +240,15 @@ const searchBarStyles = StyleSheet.create({
   }
 })
 
-function UserQRCode({ route, navigation }) {
+const UserQRCode = ({ route, navigation }) => {
   const { voucherId } = route.params;
+
   return (
-    <View style={styles.qrContainer}>
-      <QRCode size={250} value={voucherId.voucherId} />
+    <View>
+      <SvgQRCode
+        value={voucherId.voucherId}
+        size={250}
+      />
     </View>
   )
 }
@@ -279,6 +283,9 @@ const UserVoucherListTab = () => {
       <Stack.Screen
         name='Show QR Code'
         component={UserQRCode}
+        options={{
+          contentStyle: styles.qrContainer
+        }}
       />
       <Stack.Screen
         name="Transaction History"
@@ -358,9 +365,9 @@ const styles = StyleSheet.create({
   },
   qrContainer: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-  }
+    justifyContent: 'center',
+  },
 });
 
 export default UserVoucherListTab;
