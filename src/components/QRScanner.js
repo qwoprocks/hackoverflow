@@ -13,7 +13,8 @@ export default function QRScanner() {
   const [isStore, setIsStore] = useState(false)
 
   useEffect(async () => {
-    const username = await Auth.currentAuthenticatedUser()
+    const user = await Auth.currentAuthenticatedUser();
+    const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
     const storeProfileQuery = await DataStore.query(StoreProfile, c => c.username('eq', username));
     if (storeProfileQuery.length > 0) {
       setIsStore(true)
