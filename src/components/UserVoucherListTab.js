@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import SvgQRCode from 'react-native-qrcode-svg';
 import { SafeAreaView, View, StatusBar, FlatList, StyleSheet, Text, Image, TouchableOpacity, Platform } from 'react-native';
-import { ActivityIndicator } from "react-native-paper"
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import LogoutButton from './LogoutButton'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 import { Auth } from 'aws-amplify'
@@ -13,11 +11,13 @@ import { useIsFocused } from "@react-navigation/native";
 import { SearchBar } from "react-native-elements"
 import Loading from './Loading'
 import * as FileSystem from 'expo-file-system'
+import Header from "./Header";
+import AccountBalance from "./AccountBalance";
 
 function UserVouchers({ navigation }) {
   const [isLoading, setIsLoading] = useState(true);
   const [userVouchers, setUserVouchers] = useState([]);
-  const [user, setUser] = useState(null);
+  const [accountBalance, setAccountBalance] = useState(null);
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -35,7 +35,7 @@ function UserVouchers({ navigation }) {
     const vouchers = await DataStore.query(UserVoucher,
       c => c.profileID('eq', userProfile.id).used('eq', false));
     setUserVouchers(vouchers)
-    setUser(userProfile)
+    setAccountBalance(userProfile.money)
     setIsLoading(false)
   }
 
@@ -43,19 +43,8 @@ function UserVouchers({ navigation }) {
     <>
       {isLoading
         ? <Loading />
-        : <UserVoucherList user={user} userVouchers={userVouchers} navigation={navigation} />}
+        : <UserVoucherList accountBalance={accountBalance} userVouchers={userVouchers} navigation={navigation} />}
     </>
-  );
-}
-
-function Header() {
-  return (
-    <View style={styles.header}>
-      <Text style={styles.headerText}>
-        My Vouchers
-      </Text>
-      <LogoutButton />
-    </View>
   );
 }
 
@@ -97,36 +86,10 @@ const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation 
   </View>
 );
 
-const accountStyles = StyleSheet.create({
-  container: {
-    display: "flex",
-    marginHorizontal: 16,
-    paddingHorizontal: 20,
-    paddingVertical: 5,
-    height: 100,
-    backgroundColor: "#003B70",
-    borderRadius: 30,
-    alignItems: "center",
-  },
-})
-
-function AccountBalance(props) {
-  const { money } = props.user
-
-  return (
-    <View style={accountStyles.container}>
-      <Text style={accountStyles.title}>Account Balance</Text>
-      <View style={accountStyles.balance}>
-        <Text style={accountStyles.currency}>SGD</Text>
-        <Text style={accountStyles.money}>{'$' + (money / 100).toFixed(2)}</Text>
-      </View>
-    </View>
-  )
-}
-
 function UserVoucherList(props) {
-  const { userVouchers, user } = props;
+  const { userVouchers } = props;
   const [filter, setFilter] = useState('')
+  const [showWallet, setShowWallet] = useState(false)
 
   const filteredUserVouchers = userVouchers.filter(
     voucher => {
@@ -153,10 +116,10 @@ function UserVoucherList(props) {
 
   return (
     <View style={styles.containerWithHeader}>
-      <Header />
+      <Header title="My Vouchers" showWallet={showWallet} handleWallet={setShowWallet} />
       <AccountBalance
-        user={user}
-        userVouchers={userVouchers} 
+        accountBalance={props.accountBalance}
+        showWallet={showWallet}
       />
       <SearchBar
         value={filter}

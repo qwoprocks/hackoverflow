@@ -8,6 +8,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { Auth } from 'aws-amplify'
 import Loading from "./Loading"
 import Header from "./Header"
+import AccountBalance from "./AccountBalance";
 
 
 export default function StoreVouchers({ navigation }) {
@@ -55,6 +56,7 @@ function StoreVoucherList(props) {
     const { storeVouchers } = props;
     const [filter, setFilter] = useState("")
     const [accountBalance, setAccountBalance] = useState(0)
+    const [showWallet, setShowWallet] = useState(false)
 
     async function getAccountBalance() {
         const user = await Auth.currentAuthenticatedUser();
@@ -91,7 +93,11 @@ function StoreVoucherList(props) {
 
     return (
         <View style={voucherStyles.containerWithHeader}>
-            <Header title="Store Vouchers" />
+            <Header title="Store Vouchers" showWallet={showWallet} handleWallet={setShowWallet} />
+            <AccountBalance
+                accountBalance={accountBalance}
+                showWallet={showWallet}
+            />
             <SearchBar
                 value={filter}
                 onChangeText={setFilter}

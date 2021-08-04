@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Text } from "react-native";
 import LogoutButton from "./LogoutButton";
+import WalletButton from "./WalletButton";
 
 const headerStyles = StyleSheet.create({
     header: {
@@ -15,13 +16,16 @@ const headerStyles = StyleSheet.create({
     },
 })
 
-export default function Header({ title }) {
+export default function Header(props) {
     return (
         <View style={headerStyles.header}>
             <Text style={headerStyles.headerText}>
-                {title}
+                {props.title}
             </Text>
-            <LogoutButton />
+            <View style={{flexDirection: 'row', marginLeft: 'auto'}}>
+                <WalletButton showWallet={props.showWallet} handleWallet={props.handleWallet} />
+                <LogoutButton />
+            </View>
         </View>
     );
 }

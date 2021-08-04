@@ -1,15 +1,14 @@
 import React from 'react';
-import { Auth } from 'aws-amplify'
 import { TouchableOpacity, StyleSheet } from 'react-native'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-function LogoutButton() {
+function WalletButton(props) {
     return <TouchableOpacity
-        style={headerStyles.logoutButton}
-        onPress={async () => await Auth.signOut({ global: true })}
+        style={headerStyles.walletButton}
+        onPress={() => {props.handleWallet(!props.showWallet)}}
     >
         <MaterialCommunityIcons
-            name='logout'
+            name={props.showWallet ? 'wallet' : 'wallet-outline'}
             color='#003B70'
             size={30}
       />
@@ -17,9 +16,9 @@ function LogoutButton() {
 }
 
 const headerStyles = StyleSheet.create({
-    logoutButton: {
+    walletButton: {
         backgroundColor: 'transparent',
-        marginRight: 20,
+        marginRight: 10,
         justifyContent: 'center',
         alignItems: 'center',
         width: 30,
@@ -27,4 +26,4 @@ const headerStyles = StyleSheet.create({
     },
 })
 
-export default LogoutButton;
+export default WalletButton;
