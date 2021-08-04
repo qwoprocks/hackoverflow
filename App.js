@@ -38,16 +38,18 @@ const App = () => {
   const [isStore, setIsStore] = useState(false)
 
   useEffect(() => {
-    (async () => {
+    const getProfile = async () => {
       const user = await Auth.currentAuthenticatedUser();
-      const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
-      const storeProfileQuery = await DataStore.query(StoreProfile, c => c.username('eq', username));
+      const username = user.username.toLowerCase();
+      const storeProfileQuery = await DataStore.query(StoreProfile, c => c.username('eq', username))
+      console.log(storeProfileQuery)
       if (storeProfileQuery.length > 0) {
         setIsStore(true)
       } else {
         setIsStore(false)
       }
-    })();
+    }
+    getProfile()
   }, [])
 
   const setInput = (key, value) => {
@@ -57,44 +59,11 @@ const App = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName='StoreManagement'
+        initialRouteName={isStore ? 'StoreManagement' : 'UserVoucherListTab'}
         activeColor='#003B70'
         barStyle={styles.bar}
         shifting={true}
       >
-        {
-          !isStore && <Tab.Screen
-            name='UserVoucherListTab'
-            component={UserVoucherListTab}
-            options={{
-              title: 'Vouchers',
-              tabBarIcon: ({ focused, color }) => (
-                <MaterialCommunityIcons
-                  name={
-                    focused
-                      ? 'ticket-confirmation'
-                      : 'ticket-confirmation-outline'
-                  }
-                  color={color}
-                  size={26}
-                />
-              )
-            }}
-          />
-        }
-        <Tab.Screen
-          name='Scan'
-          component={QRScanner}
-          options={{
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons
-                name='qrcode-scan'
-                color={color}
-                size={20}
-              />
-            )
-          }}
-        />
         <Tab.Screen
           name='StoreVouchers'
           component={StoreVouchers}
@@ -113,25 +82,59 @@ const App = () => {
             )
           }}
         />
+        <Tab.Screen
+          name='Scan'
+          component={QRScanner}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons
+                name='qrcode-scan'
+                color={color}
+                size={20}
+              />
+            )
+          }}
+        />
         {
-          isStore && <Tab.Screen
-            name="StoreManagement"
-            component={StoreManagement}
-            options={{
-              title: 'Manage',
-              tabBarIcon: ({ focused, color }) => (
-                <MaterialCommunityIcons
-                  name={
-                    focused
-                      ? 'store'
-                      : 'store-outline'
-                  }
-                  color={color}
-                  size={26}
-                />
-              )
-            }}
-          />
+          isStore ? (
+            <Tab.Screen
+              name="StoreManagement"
+              component={StoreManagement}
+              options={{
+                title: 'Manage',
+                tabBarIcon: ({ focused, color }) => (
+                  <MaterialCommunityIcons
+                    name={
+                      focused
+                        ? 'store'
+                        : 'store-outline'
+                    }
+                    color={color}
+                    size={26}
+                  />
+                )
+              }}
+            />
+          ) : (
+            <Tab.Screen
+              name='UserVoucherListTab'
+              component={UserVoucherListTab}
+              options={{
+                title: 'Vouchers',
+                tabBarIcon: ({ focused, color }) => (
+                  <MaterialCommunityIcons
+                    name={
+                      focused
+                        ? 'ticket-confirmation'
+                        : 'ticket-confirmation-outline'
+                    }
+                    color={color}
+                    size={26}
+                  />
+                )
+              }}
+            />
+          )
         }
       </Tab.Navigator>
     </NavigationContainer>
