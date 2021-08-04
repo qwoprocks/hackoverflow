@@ -109,7 +109,7 @@ function UserVoucherList(props) {
       title={item.Voucher.title}
       timebought={item.timebought}
       daysvalid={item.Voucher.daysvalid}
-      voucherId={item.Voucher.id}
+      voucherId={item.id}
       navigation={props.navigation}
     />
   );
@@ -182,7 +182,7 @@ const UserQRCode = ({ route, navigation }) => {
   return base64 ? (
     <View>
       <SvgQRCode
-        value={voucherId.voucherId}
+        value={voucherId}
         logo={Platform.OS === 'web' ? null : { uri: base64 }}
         logoSize={Platform.OS === 'web' ? 0 : 50}
         logoBackgroundColor='white'

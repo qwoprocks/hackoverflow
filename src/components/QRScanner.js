@@ -33,7 +33,6 @@ export default function QRScanner({ navigation }) {
   const handleBarCodeScanned = async (data) => {
     if (!data) return
     if (isStore) {
-      alert(`Bar code with data ${data} has been scanned!`)
       const userVouchers = await DataStore.query(UserVoucher, v => v.id('eq', data))
       if (userVouchers.length > 0) {
         try {

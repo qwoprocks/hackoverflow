@@ -21,6 +21,7 @@ import UserVoucherListTab from './src/components/UserVoucherListTab'
 import StoreVouchers from './src/components/StoreVouchers'
 import CustomConfirmSignUp from './src/components/CustomConfirmSignUp'
 import LoginHeader from './src/components/LoginHeader'
+import StoreManagement from './src/components/StoreManagement'
 
 Amplify.configure({
   ...config,
