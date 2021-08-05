@@ -212,7 +212,7 @@ function ConfirmationDialog(props) {
                     onPress={() => {
                         setPurchase(true)
                         props.alertOptions.setShowDialog(false)
-                    }} 
+                    }}
                 />
             </Dialog.Container>
         )
@@ -356,13 +356,13 @@ function VoucherCard(props) {
                         title: voucher.title,
                         price: voucher.price,
                         handlePurchase: purchaseVoucher,
-                        setShowDialog: () => {
+                        setShowDialog: (visible) => {
                             props.setAlertOptions({
-                                visible:false,
+                                visible: visible,
                                 shop: voucher.shop,
                                 title: voucher.title,
                                 price: voucher.price,
-                                handlePurchase: () => undefined,
+                                handlePurchase: purchaseVoucher,
                                 setShowDialog: () => undefined,
                             })
                         }
