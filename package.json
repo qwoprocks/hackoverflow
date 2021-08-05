@@ -8,7 +8,8 @@
     "eject": "expo eject",
     "ci": "yarn install --frozen-lockfile",
     "lint": "yarn run eslint src/",
-    "lint-fix": "yarn run eslint src/ --fix"
+    "lint-fix": "yarn run eslint src/ --fix",
+    "build": "expo build:web"
   },
   "dependencies": {
     "@aws-amplify/datastore": "^3.3.0",

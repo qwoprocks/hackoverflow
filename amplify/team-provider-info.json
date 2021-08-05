@@ -1,20 +1,26 @@
 {
-  "dev": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-hackoverflow-dev-174746-authRole",
-      "UnauthRoleArn": "arn:aws:iam::679183838262:role/amplify-hackoverflow-dev-174746-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::679183838262:role/amplify-hackoverflow-dev-174746-authRole",
-      "Region": "ap-southeast-1",
-      "DeploymentBucketName": "amplify-hackoverflow-dev-174746-deployment",
-      "UnauthRoleName": "amplify-hackoverflow-dev-174746-unauthRole",
-      "StackName": "amplify-hackoverflow-dev-174746",
-      "StackId": "arn:aws:cloudformation:ap-southeast-1:679183838262:stack/amplify-hackoverflow-dev-174746/b2a943e0-f376-11eb-8a4d-068bdc3a7ec0",
-      "AmplifyAppId": "dfsfdcle9k16z"
-    },
-    "categories": {
-      "auth": {
-        "hackoverflow": {}
-      }
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-hackoverflow-dev-174746-authRole",
+            "UnauthRoleArn": "arn:aws:iam::679183838262:role/amplify-hackoverflow-dev-174746-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::679183838262:role/amplify-hackoverflow-dev-174746-authRole",
+            "Region": "ap-southeast-1",
+            "DeploymentBucketName": "amplify-hackoverflow-dev-174746-deployment",
+            "UnauthRoleName": "amplify-hackoverflow-dev-174746-unauthRole",
+            "StackName": "amplify-hackoverflow-dev-174746",
+            "StackId": "arn:aws:cloudformation:ap-southeast-1:679183838262:stack/amplify-hackoverflow-dev-174746/b2a943e0-f376-11eb-8a4d-068bdc3a7ec0",
+            "AmplifyAppId": "dfsfdcle9k16z"
+        },
+        "categories": {
+            "auth": {
+                "hackoverflow": {}
+            },
+            "hosting": {
+                "amplifyhosting": {
+                    "appId": "dfsfdcle9k16z",
+                    "type": "manual"
+                }
+            }
+        }
     }
-  }
 }
