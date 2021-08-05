@@ -11,6 +11,7 @@ import { useIsFocused } from "@react-navigation/native";
 export default function QRScanner({ navigation }) {
   const [aspectRatio, setAspectRatio] = useState('4:3')
   const [isStore, setIsStore] = useState(false)
+  const [hasScanned, setHasScanned] = useState(false)
   const isFocused = useIsFocused()
 
   useEffect(() => {
@@ -27,7 +28,8 @@ export default function QRScanner({ navigation }) {
   }, [])
 
   const handleBarCodeScanned = async (data) => {
-    if (!data) return
+    if (!data || hasScanned) return
+    setHasScanned(true)
     if (isStore) {
       const userVouchers = await DataStore.query(UserVoucher, v => v.id('eq', data))
       if (userVouchers.length > 0) {
@@ -70,6 +72,7 @@ export default function QRScanner({ navigation }) {
         }
       }
     }
+    setHasScanned(false)
   };
 
   const handleBarCodeError = () => {
@@ -94,7 +97,7 @@ export default function QRScanner({ navigation }) {
           <View style={styles.appcontainer}>
             {
               isFocused && <CameraFullScreen
-                onBarCodeScanned={(res) => handleBarCodeScanned(res.data)}
+                onBarCodeScanned={(res) => hasScanned ? undefined : handleBarCodeScanned(res.data)}
                 barCodeScannerSettings={{
                   barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
                 }}
