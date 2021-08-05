@@ -43,6 +43,7 @@ export default function StoreVouchers(props) {
     useEffect(() => {
         if (isFocused) {
             getAccountBalance()
+            getAllStoreVouchers()
         }
     }, [isFocused]);
 
@@ -58,10 +59,6 @@ export default function StoreVouchers(props) {
         }
       }
       getProfile()
-    }, [])
-
-    useEffect(() => {
-        getAllStoreVouchers()
     }, [])
 
     async function getAllStoreVouchers() {
