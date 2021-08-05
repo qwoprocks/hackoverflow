@@ -8,6 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Input } from 'react-native-elements';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Auth } from 'aws-amplify';
+import moment from 'moment';
 import Header from './Header';
 import Loading from './Loading';
 import { StoreVoucher, UserVoucher, StoreProfile } from '../models';
@@ -425,6 +426,7 @@ function VoucherCard(props) {
           {(voucher.price / 100).toFixed(2)}
           {' '}
           Valid for
+          {' '}
           {voucher.daysvalid}
           {' '}
           days
@@ -432,19 +434,19 @@ function VoucherCard(props) {
         <Text style={voucherStyles.expiry}>
           Expires:
           {' '}
-          {new Date(voucher.expiry).toLocaleDateString()}
+          {moment(new Date(voucher.expiry)).format('D/M/YY')}
         </Text>
       </View>
       <View style={{ flex: 1 }} />
 
       {deleteVoucher && (
-        <TouchableOpacity onPress={deleteVoucher}>
-          <MaterialCommunityIcons
-            name="delete"
-            size={40}
-            color="#003B70"
-          />
-        </TouchableOpacity>
+      <TouchableOpacity onPress={deleteVoucher}>
+        <MaterialCommunityIcons
+          name="delete"
+          size={40}
+          color="#003B70"
+        />
+      </TouchableOpacity>
       )}
     </View>
   );

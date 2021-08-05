@@ -50,6 +50,13 @@ export default function StoreVouchers(props) {
   }, [isFocused]);
 
   useEffect(() => {
+    if (isFocused) {
+      getAccountBalance();
+      getAllStoreVouchers();
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
     const getProfile = async () => {
       const user = await Auth.currentAuthenticatedUser();
       const username = user.username.toLowerCase();
@@ -61,10 +68,6 @@ export default function StoreVouchers(props) {
       }
     };
     getProfile();
-  }, []);
-
-  useEffect(() => {
-    getAllStoreVouchers();
   }, []);
 
   async function getAllStoreVouchers() {
