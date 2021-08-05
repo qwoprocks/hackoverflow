@@ -23,6 +23,8 @@ import StoreVouchers from './src/components/StoreVouchers'
 import CustomConfirmSignUp from './src/components/CustomConfirmSignUp'
 import LoginHeader from './src/components/LoginHeader'
 
+console.disableYellowBox = true
+
 Amplify.configure({
   ...config,
   Analytics: {
