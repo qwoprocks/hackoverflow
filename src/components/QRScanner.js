@@ -13,6 +13,7 @@ export default function QRScanner({ navigation }) {
   const [isStore, setIsStore] = useState(false)
   const [hasScanned, setHasScanned] = useState(false)
   const isFocused = useIsFocused()
+  const [prevQR, setPrevQR] = useState('')
 
   useEffect(() => {
     (async () => {
@@ -28,7 +29,8 @@ export default function QRScanner({ navigation }) {
   }, [])
 
   const handleBarCodeScanned = async (data) => {
-    if (!data || hasScanned) return
+    if (!data || hasScanned || data === prevQR) return
+    setPrevQR(data)
     setHasScanned(true)
     if (isStore) {
       const userVouchers = await DataStore.query(UserVoucher, v => v.id('eq', data))
@@ -97,7 +99,7 @@ export default function QRScanner({ navigation }) {
           <View style={styles.appcontainer}>
             {
               isFocused && <CameraFullScreen
-                onBarCodeScanned={(res) => hasScanned ? undefined : handleBarCodeScanned(res.data)}
+                onBarCodeScanned={(res) => (hasScanned || res.data === prevQR) ? undefined : handleBarCodeScanned(res.data)}
                 barCodeScannerSettings={{
                   barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
                 }}
