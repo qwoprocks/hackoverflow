@@ -1,6 +1,6 @@
-import React from 'react'
-import { View } from 'react-native'
-import { Auth, I18n, Logger } from 'aws-amplify'
+import React from 'react';
+import { View } from 'react-native';
+import { Auth, I18n } from 'aws-amplify';
 import {
   AuthPiece,
   FormField,
@@ -10,10 +10,10 @@ import {
   AmplifyButton,
   SignedOutMessage,
   Wrapper,
-} from 'aws-amplify-react-native'
-import { DataStore } from "@aws-amplify/datastore"
+} from 'aws-amplify-react-native';
+import { DataStore } from '@aws-amplify/datastore';
 
-import { UserProfile } from '../models'
+import { UserProfile } from '../models';
 
 export default class CustomConfirmSignUp extends AuthPiece {
   constructor(props) {
@@ -35,25 +35,25 @@ export default class CustomConfirmSignUp extends AuthPiece {
     const username = this.getUsernameFromInput();
     Auth.confirmSignUp(username, code)
       .then(async (data) => {
-        this.changeState('signedUp')
+        this.changeState('signedUp');
         try {
           const userData = await DataStore.save(
             new UserProfile({
               username: username.toLowerCase(),
               money: 0,
-            })
-          )
+            }),
+          );
         } catch (error) {
-          console.error(error)
+          console.error(error);
         }
       })
-      .catch(err => this.error(err));
+      .catch((err) => this.error(err));
   }
 
   resend() {
     const username = this.getUsernameFromInput();
     Auth.resendSignUp(username)
-      .catch(err => this.error(err));
+      .catch((err) => this.error(err));
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -79,10 +79,10 @@ export default class CustomConfirmSignUp extends AuthPiece {
               {this.renderUsernameField(theme)}
               <FormField
                 theme={theme}
-                onChangeText={text => this.setState({ code: text })}
+                onChangeText={(text) => this.setState({ code: text })}
                 label={I18n.get('Confirmation Code')}
                 placeholder={I18n.get('Enter your confirmation code')}
-                required={true}
+                required
               />
               <AmplifyButton
                 theme={theme}

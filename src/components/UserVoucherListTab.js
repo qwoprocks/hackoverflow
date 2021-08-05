@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import SvgQRCode from 'react-native-qrcode-svg';
-import { SafeAreaView, View, StatusBar, FlatList, StyleSheet, Text, Image, TouchableOpacity, Platform } from 'react-native';
+import {
+  SafeAreaView, View, StatusBar, FlatList, StyleSheet, Text, Image, TouchableOpacity, Platform,
+} from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
-import { Auth } from 'aws-amplify'
-import { DataStore } from "@aws-amplify/datastore"
-import { UserVoucher, UserProfile } from "../models"
-import { useIsFocused } from "@react-navigation/native";
-import { SearchBar } from "react-native-elements"
-import Loading from './Loading'
-import * as FileSystem from 'expo-file-system'
-import Header from "./Header";
-import AccountBalance from "./AccountBalance";
+import { Auth } from 'aws-amplify';
+import { DataStore } from '@aws-amplify/datastore';
+import { useIsFocused } from '@react-navigation/native';
+import { SearchBar } from 'react-native-elements';
+import * as FileSystem from 'expo-file-system';
+import Loading from './Loading';
+import { UserVoucher, UserProfile } from '../models';
+import Header from './Header';
+import AccountBalance from './AccountBalance';
 
 function UserVouchers({ navigation }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -24,31 +26,39 @@ function UserVouchers({ navigation }) {
     if (isFocused) {
       getAllUserVouchers();
     }
-  }, [isFocused])
+  }, [isFocused]);
 
   async function getAllUserVouchers() {
     const user = await Auth.currentAuthenticatedUser();
     const username = user.signInUserSession.accessToken.payload.username.toLowerCase();
     const userProfileQuery = await DataStore.query(UserProfile,
-      c => c.username('eq', username));
+      (c) => c.username('eq', username));
     const userProfile = userProfileQuery[0];
     const vouchers = await DataStore.query(UserVoucher,
-      c => c.profileID('eq', userProfile.id).used('eq', false));
-    setUserVouchers(vouchers)
-    setAccountBalance(userProfile.money)
-    setIsLoading(false)
+      (c) => c.profileID('eq', userProfile.id).used('eq', false));
+    setUserVouchers(vouchers);
+    setAccountBalance(userProfile.money);
+    setIsLoading(false);
   }
 
   return (
     <>
       {isLoading
         ? <Loading />
-        : <UserVoucherList accountBalance={accountBalance} userVouchers={userVouchers} navigation={navigation} />}
+        : (
+          <UserVoucherList
+            accountBalance={accountBalance}
+            userVouchers={userVouchers}
+            navigation={navigation}
+          />
+        )}
     </>
   );
 }
 
-const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation }) => (
+const Item = ({
+  logo, shop, title, timebought, daysvalid, voucherId, navigation,
+}) => (
   <View style={[styles.container, styles.voucher, styles.shadowProp]}>
     <View style={styles.logo}>
       <Image
@@ -66,9 +76,12 @@ const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation 
         {title}
       </Text>
       <Text style={styles.expiry}>
-        {moment(timebought).add(daysvalid, 'd').diff(Date.now(), 'days')}D{' '}
+        {moment(timebought).add(daysvalid, 'd').diff(Date.now(), 'days')}
+        D
+        {' '}
         {moment(timebought).add(daysvalid, 'd').diff(Date.now(), 'hours')
-          - (moment(timebought).add(daysvalid, 'd').diff(Date.now(), 'days') * 24)}H till expiry
+          - (moment(timebought).add(daysvalid, 'd').diff(Date.now(), 'days') * 24)}
+        H till expiry
       </Text>
     </View>
     <TouchableOpacity
@@ -78,8 +91,8 @@ const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation 
       })}
     >
       <MaterialCommunityIcons
-        name='qrcode'
-        color='#003B70'
+        name="qrcode"
+        color="#003B70"
         size={65}
       />
     </TouchableOpacity>
@@ -88,19 +101,19 @@ const Item = ({ logo, shop, title, timebought, daysvalid, voucherId, navigation 
 
 function UserVoucherList(props) {
   const { userVouchers } = props;
-  const [filter, setFilter] = useState('')
-  const [showWallet, setShowWallet] = useState(false)
+  const [filter, setFilter] = useState('');
+  const [showWallet, setShowWallet] = useState(false);
 
   const filteredUserVouchers = userVouchers.filter(
-    voucher => {
-      const filterToLower = filter.toLowerCase()
+    (voucher) => {
+      const filterToLower = filter.toLowerCase();
 
       return (
         voucher.Voucher.shop.toLowerCase().includes(filterToLower)
         || voucher.Voucher.title.toLowerCase().includes(filterToLower)
       );
-    }
-  )
+    },
+  );
 
   const renderVoucher = ({ item }) => (
     <Item
@@ -130,11 +143,11 @@ function UserVoucherList(props) {
         lightTheme
       />
       <SafeAreaView style={styles.container}>
-        <StatusBar barStyle='dark-content' />
+        <StatusBar barStyle="dark-content" />
         <FlatList
           data={filteredUserVouchers}
           renderItem={renderVoucher}
-          keyExtractor={voucher => voucher.id}
+          keyExtractor={(voucher) => voucher.id}
         />
       </SafeAreaView>
     </View>
@@ -143,40 +156,40 @@ function UserVoucherList(props) {
 
 const searchBarStyles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    backgroundColor: "transparent",
-    borderTopColor: "transparent",
-    borderBottomColor: "transparent",
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
   },
   input: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     marginLeft: 10,
     marginRight: 10,
     paddingLeft: 10,
     borderRadius: 9999,
-    color: 'black'
-  }
-})
+    color: 'black',
+  },
+});
 
-const UserQRCode = ({ route, navigation }) => {
+const UserQRCode = ({ route }) => {
   const { voucherId, logo } = route.params.voucher;
   const [base64, setBase64] = useState();
 
   useEffect(() => {
-    getLogo()
-  }, [])
+    getLogo();
+  }, []);
 
   async function getLogo() {
     if (Platform.OS === 'web') {
-      setBase64('null')
-      return
+      setBase64('null');
+      return;
     }
     const result = await FileSystem.downloadAsync(
       logo,
-      FileSystem.cacheDirectory + "logo.tmp"
-    )
-    const base64 = await FileSystem.readAsStringAsync(result.uri, { encoding: "base64" })
-    setBase64(`data:${result.headers["content-type"]};base64,${base64}`)
+      `${FileSystem.cacheDirectory}logo.tmp`,
+    );
+    const base64 = await FileSystem.readAsStringAsync(result.uri, { encoding: 'base64' });
+    setBase64(`data:${result.headers['content-type']};base64,${base64}`);
   }
 
   return base64 ? (
@@ -185,53 +198,49 @@ const UserQRCode = ({ route, navigation }) => {
         value={voucherId}
         logo={Platform.OS === 'web' ? null : { uri: base64 }}
         logoSize={Platform.OS === 'web' ? 0 : 50}
-        logoBackgroundColor='white'
+        logoBackgroundColor="white"
         size={250}
       />
     </View>
   )
-    : <Loading />
-}
+    : <Loading />;
+};
 
 const Stack = createNativeStackNavigator();
 
-
-
-const UserVoucherListTab = () => {
-  return (
-    <Stack.Navigator
-      style={{ flex: 1 }}
-      initialRouteName='My Vouchers'
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: '#FFF',
-        },
-        headerTitleStyle: {
-          color: '#000',
-          fontSize: 18,
-        },
-        headerBackTitle: 'Back',
-        headerTintColor: '#003B70',
+const UserVoucherListTab = () => (
+  <Stack.Navigator
+    style={{ flex: 1 }}
+    initialRouteName="My Vouchers"
+    screenOptions={{
+      headerStyle: {
+        backgroundColor: '#FFF',
+      },
+      headerTitleStyle: {
+        color: '#000',
+        fontSize: 18,
+      },
+      headerBackTitle: 'Back',
+      headerTintColor: '#003B70',
+    }}
+  >
+    <Stack.Screen
+      name="My Vouchers"
+      component={UserVouchers}
+      options={{
+        contentStyle: { flex: 1 },
+        headerShown: false,
       }}
-    >
-      <Stack.Screen
-        name='My Vouchers'
-        component={UserVouchers}
-        options={{
-          contentStyle: { flex: 1 },
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name='Show QR Code'
-        component={UserQRCode}
-        options={{
-          contentStyle: styles.qrContainer
-        }}
-      />
-    </Stack.Navigator>
-  )
-}
+    />
+    <Stack.Screen
+      name="Show QR Code"
+      component={UserQRCode}
+      options={{
+        contentStyle: styles.qrContainer,
+      }}
+    />
+  </Stack.Navigator>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -241,7 +250,7 @@ const styles = StyleSheet.create({
   },
   containerWithHeader: {
     flex: 1,
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   header: {
     flexDirection: 'row',
@@ -295,8 +304,8 @@ const styles = StyleSheet.create({
   button: {
     marginLeft: 'auto',
     alignSelf: 'center',
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: 'white',
     width: 70,
     height: 70,
