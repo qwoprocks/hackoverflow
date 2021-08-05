@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 
 import { DataStore } from "@aws-amplify/datastore"
 import { StoreVoucher, UserVoucher, UserProfile, StoreProfile } from "../models"
-import { FlatList, StyleSheet, SafeAreaView, StatusBar, Text, Image, View, TouchableOpacity, Modal } from "react-native"
+import { FlatList, StyleSheet, SafeAreaView, StatusBar, Text, Image, View, TouchableOpacity, Modal, Platform } from "react-native"
 import { SearchBar } from "react-native-elements"
 import { Auth } from 'aws-amplify'
 import Loading from "./Loading"
@@ -10,6 +10,7 @@ import Header from "./Header"
 import AccountBalance from "./AccountBalance";
 import { useIsFocused } from "@react-navigation/native";
 import AwesomeAlert from 'react-native-awesome-alerts';
+import Dialog from "react-native-dialog";
 
 
 export default function StoreVouchers(props) {
@@ -163,32 +164,58 @@ function StoreVoucherList(props) {
 }
 
 function ConfirmationDialog(props) {
+    const [purchase, setPurchase] = useState(false)
     return (
-        <AwesomeAlert
-            show={props.alertOptions.visible}
-            showProgress={false}
-            animatedValue={0}
-            useNativeDriver={true}
-            title={props.alertOptions.shop + ' ' + props.alertOptions.title}
-            message={`Do you want to purchase this item? \n You will be charged $${(props.alertOptions.price / 100).toFixed(2)}.`}
-            messageStyle={{textAlign: 'center'}}
-            closeOnTouchOutside={true}
-            closeOnHardwareBackPress={true}
-            showCancelButton={true}
-            showConfirmButton={true}
-            cancelText="Cancel"
-            confirmText="Purchase"
-            confirmButtonColor="#DD6B55"
-            contentContainerStyle={{ borderWidth: '1px', borderColor: 'black' }}
-            overlayStyle={{ backgroundColor: 'transparent' }}
-            onCancelPressed={() => {
-                props.alertOptions.setShowDialog(false)
-            }}
-            onConfirmPressed={() => {
-                props.alertOptions.setShowDialog(false)
-                setTimeout(() => props.alertOptions.handlePurchase(), 500);
-            }}
-        />
+        Platform.OS === 'web' ? (
+            <AwesomeAlert
+                show={props.alertOptions.visible}
+                showProgress={false}
+                animatedValue={0}
+                useNativeDriver={true}
+                title={props.alertOptions.shop + ' ' + props.alertOptions.title}
+                message={`Do you want to purchase this item? \n You will be charged $${(props.alertOptions.price / 100).toFixed(2)}.`}
+                messageStyle={{textAlign: 'center'}}
+                closeOnTouchOutside={true}
+                closeOnHardwareBackPress={true}
+                showCancelButton={true}
+                showConfirmButton={true}
+                cancelText="Cancel"
+                confirmText="Purchase"
+                confirmButtonColor="#DD6B55"
+                contentContainerStyle={{ borderWidth: '1px', borderColor: 'black' }}
+                overlayStyle={{ backgroundColor: 'transparent' }}
+                onCancelPressed={() => {
+                    props.alertOptions.setShowDialog(false)
+                }}
+                onConfirmPressed={() => {
+                    props.alertOptions.setShowDialog(false)
+                    setTimeout(() => props.alertOptions.handlePurchase(), 700);
+                }}
+            />
+        ) : (
+            <Dialog.Container 
+                visible={props.alertOptions.visible} 
+                onHide={() => {
+                    if (purchase) {
+                        props.alertOptions.handlePurchase()
+                        setPurchase(false)
+                    }
+                }}
+            >
+                <Dialog.Title>{props.alertOptions.shop + ' ' + props.alertOptions.title}</Dialog.Title>
+                <Dialog.Description>
+                  Do you want to purchase this item? You will be charged $${(props.alertOptions.price / 100).toFixed(2)}.
+                </Dialog.Description>
+                <Dialog.Button label="Cancel" onPress={() => {props.alertOptions.setShowDialog(false)}} />
+                <Dialog.Button 
+                    label="Purchase" 
+                    onPress={() => {
+                        setPurchase(true)
+                        props.alertOptions.setShowDialog(false)
+                    }} 
+                />
+            </Dialog.Container>
+        )
     );
 }
 
