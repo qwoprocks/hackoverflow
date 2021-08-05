@@ -10,6 +10,7 @@ import { Input } from 'react-native-elements';
 import { NavigationContainer } from "@react-navigation/native";
 import { TextInput } from "react-native-paper";
 import { ScrollView } from "react-native-gesture-handler";
+import moment from 'moment';
 
 const USERNAME = "grab"
 
@@ -413,7 +414,7 @@ function VoucherCard(props) {
                 ${(voucher.price / 100).toFixed(2)} Valid for {voucher.daysvalid} days
             </Text>
             <Text style={voucherStyles.expiry}>
-                Expires: {new Date(voucher.expiry).toLocaleDateString()}
+                Expires: {moment(new Date(voucher.expiry)).format('D/M/YY')}
             </Text>
         </View>
         <View style={{ flex: 1 }} />
